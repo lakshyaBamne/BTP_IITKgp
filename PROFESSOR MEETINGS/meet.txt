@@ -1,0 +1,19 @@
+17th March 2023 (In Person)
+-> Initial meet with Prof. Naveen Kumar Garg on project finalization.
+-------------------------------------------------------------------------------
+1st May 2023 (In Person)
+-> Meet to discuss some logistics for the project and workflow.
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+TASK-1 : Reproduce the results of the Research paper (tentatively in one month)
+
+-> Revise Hyperbolic Partial Differential Equations
+-> Solve Assignment on Hyperbolic PDE schemes (Lax-Friedrics Scheme)
+-> Read given Research paper 
+   =>Semi-definite central-upwind Rankine-Hugoniot schemes for 
+     hyperbolic systems of conservation laws
+     by Prof. Naveen Kumar Garg, Alexander Kurganov, Yongle Liu
+
+-------------------------------------------------------------------------------
+
