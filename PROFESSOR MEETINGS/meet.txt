@@ -9,11 +9,30 @@
 TASK-1 : Reproduce the results of the Research paper (tentatively in one month)
 
 -> Revise Hyperbolic Partial Differential Equations
--> Solve Assignment on Hyperbolic PDE schemes (Lax-Friedrics Scheme)
--> Read given Research paper 
+-> [DONE] Solve Assignment on Hyperbolic PDE schemes (Lax-Friedrics Scheme)
+-> [READ ABSTRACT & INTRODUCTION] Read given Research paper 
    =>Semi-definite central-upwind Rankine-Hugoniot schemes for 
      hyperbolic systems of conservation laws
      by Prof. Naveen Kumar Garg, Alexander Kurganov, Yongle Liu
 
 -------------------------------------------------------------------------------
 
+20th May 2023 (Online)
+-> Meet to discuss tasks moving forward.
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+TASK-1 (revised) : Reproducing the results of 1D Euler equation using the 
+			 schemes provided in section 2.1 of the research paper.
+			 
+			 => DEADLINE : (3 Weeks) 10th June 2023
+
+-> Review the 1D Euler system given in section 4.1 (One Dimensional Examples)
+-> Convert the system into it's Compact Form
+-> Convert the system into it's QuasiLinear Form
+-> Develop and evaluate the 3x3 Jacobian of the 1D Euler system and 
+   find the Eigenvalues and Eigenvectors of this system.
+-> now review and understand the Fortran90 code of numerical scheme in 
+   section 2.1 provided by Prof. N. K. Garg in the meet.
+-> Reproduce the results and write new code in C++.
+-------------------------------------------------------------------------------

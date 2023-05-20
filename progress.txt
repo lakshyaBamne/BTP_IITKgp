@@ -1,0 +1,15 @@
+5th May 2023
+-> Read the abstract and introduction of the research paper
+   "Semi-discrete central-upwind rankine-huoniot schemes for hyperbolic system of conservation laws"
+   by Prof. Naveen Kumar Garg, Alexander Kurganov and Yongle Liu.
+--------------------------------------------------------------------------------------------------------
+17th May 2023
+-> Reviewed the "Lax-Friedrichs scheme for hyperbolic system of conservarion laws" and coded
+   it in C++ (basically solved Assignment-1 from Numerical Methods Lab)
+-> Started reading some theory required to understand the aforementioned research paper
+   from the book "Computational Gasdynamics by Culbert B. Laney".
+--------------------------------------------------------------------------------------------------------
+
+
+
+
