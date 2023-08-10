@@ -23,9 +23,9 @@ TASK-1 : Reproduce the results of the Research paper (tentatively in one month)
 
 -------------------------------------------------------------------------------
 TASK-1 (revised) : Reproducing the results of 1D Euler equation using the 
-			 schemes provided in section 2.1 of the research paper.
-			 
-			 => DEADLINE : (3 Weeks) 10th June 2023
+		   schemes provided in section 2.1 of the research paper.
+		   
+	           => DEADLINE : (3 Weeks) 10th June 2023
 
 -> Review the 1D Euler system given in section 4.1 (One Dimensional Examples)
 -> Convert the system into it's Compact Form
@@ -35,4 +35,16 @@ TASK-1 (revised) : Reproducing the results of 1D Euler equation using the
 -> now review and understand the Fortran90 code of numerical scheme in 
    section 2.1 provided by Prof. N. K. Garg in the meet.
 -> Reproduce the results and write new code in C++.
+-------------------------------------------------------------------------------
+
+29th May 2023 (Online)
+-> Meet to explain my progress and to ask for further guidance.
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+TASK-2  : Implement the Numerical Schemes for solving the Time 
+	  Dependent Euler Equation in both 1D and 2D.
+	
+	  => DEADLINE : End of July (i.e., before returning to campus)
+
 -------------------------------------------------------------------------------

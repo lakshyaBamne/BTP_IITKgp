@@ -9,7 +9,11 @@
 -> Started reading some theory required to understand the aforementioned research paper
    from the book "Computational Gasdynamics by Culbert B. Laney".
 --------------------------------------------------------------------------------------------------------
-
-
+29th May 2023
+-> Understood the background information on Time Dependent Euler Equations of Gas Dynamcis in 1-D and 
+   added notes for the same to github repository.
+--------------------------------------------------------------------------------------------------------
+10th August 2023
+-> Starting the coding part for the algorithm in the research paper (1D)
 
 

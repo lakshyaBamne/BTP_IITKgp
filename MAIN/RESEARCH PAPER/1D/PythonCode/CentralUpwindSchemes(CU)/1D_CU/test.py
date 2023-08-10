@@ -1,0 +1,1 @@
+print("Unicode Tester : \u25B2x ")
