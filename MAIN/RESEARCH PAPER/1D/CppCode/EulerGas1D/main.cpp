@@ -3,7 +3,7 @@
 
 // Class imports
 #include "Domain.h"
-#include "InitialSet.cpp"
+#include "ConservedVariables.h"
 
 using namespace std;
 
@@ -27,6 +27,7 @@ int main(){
 
     // now we need to extend the cells to accomodate ghost values
     // which are required in the Numerical Scheme to calculate next iteration values
+    
 
     return 0;
 }

@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include<iostream>
 #include<vector>
 
 #define ll long long int
@@ -16,7 +15,8 @@ using namespace std;
 class Domain{
 private:
     // variables used to define the computational domain
-    double x_start, x_end;
+    double x_start;
+    double x_end;
     ll num_grid_points;
     vector<double> domain;
 

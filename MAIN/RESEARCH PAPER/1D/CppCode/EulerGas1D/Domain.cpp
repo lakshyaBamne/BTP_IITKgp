@@ -11,6 +11,7 @@
 using namespace std;
 
 // constructor for the domain
+// ! definition for this function is taken directly from the Fortran Code
 Domain::Domain(double start, double end, ll num_points){
     // after class variable initialization we need to initialize the domain vector
 
@@ -18,7 +19,7 @@ Domain::Domain(double start, double end, ll num_points){
     x_end = end;
     num_grid_points = num_points;
 
-    auto dx = (x_end-x_start)/num_grid_points;
+    double dx = (x_end-x_start)/num_grid_points;
 
     for(int i=1 ; i<=num_grid_points ; i++){
         domain.push_back( x_start + (i-0.5)*(dx) );
