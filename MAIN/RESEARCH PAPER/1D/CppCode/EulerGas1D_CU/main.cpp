@@ -11,6 +11,7 @@
 #include "CUNumericalFlux.h"
 #include "SSPRK.h"
 #include "OutputResult.h"
+#include "EulerForwardDifference.h"
 
 #define ll long long int
 
@@ -20,6 +21,7 @@ namespace IRP = InitRiemannProblem;
 namespace CUF = CUNumericalFlux;
 namespace SRK = SSPRK;
 namespace OPF = OutputResult;
+namespace EFD = EulerForwardDifference;
 
 int main(){
     
@@ -64,15 +66,23 @@ int main(){
 
     // Now we can start the iterations
     while( t < time.second ){
+        // Log
+        cout << "t = " << t << " | dt = " << dt << endl;
+
+
         //! Writing output to a file for plotting later
         OPF::write_vector(cons_vars[0], "Density.txt");
         OPF::write_vector(cons_vars[1], "Momentum.txt");
         OPF::write_vector(cons_vars[2], "Energy.txt");
 
         vector<vector<double>> cu_flux = CUF::get_cu_flux(cons_vars, initial_conditions, dt, dx, t, time);
+
         double LAMBDA = dt / dx;
+        
         t = t+dt;
+
         vector<vector<double>> cons_vars_next = SRK::get_next_cons_vars(cons_vars, cu_flux, LAMBDA, initial_conditions, dt, dx, t, time);    
+        // vector<vector<double>> cons_vars_next = EFD::get_next_cons_vars(cons_vars, cu_flux, LAMBDA, initial_conditions, dt, dx, t, time);
 
         // copy the new values in the old vector to be used in the next iteration
         for(int i=0 ; i<cons_vars[0].size() ; i++){

@@ -1,4 +1,13 @@
+# Ignore folders using names
 venv/
 .vscode/
 __pycache__/
 FortranCode/
+.env/
+.venv/
+
+# Ignore files with extensions
+*.exe
+*.o
+*.x
+*.out

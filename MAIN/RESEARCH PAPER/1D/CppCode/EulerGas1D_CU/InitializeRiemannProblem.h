@@ -117,7 +117,6 @@ vector<vector<double>> InitRiemannProblem::get_conserved_variables(pair<string,s
     return cons_vars;
 }
 
-
 // Log function implementations
 void InitRiemannProblem::print_grid(vector<double>& grid){
     cout << "-------------------------LOG (Computational Grid)--------------------------" << endl;

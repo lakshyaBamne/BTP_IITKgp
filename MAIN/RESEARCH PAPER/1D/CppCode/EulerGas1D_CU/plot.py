@@ -40,14 +40,14 @@ def plot_cons_vars(grid, cons_var) -> None:
         var -> dependent grid for the Conserved variable to be plotted
     """
     var_initial = cons_var[0][1:-1]
-    var_final = cons_var[1][1:-1]
+    var_final = cons_var[-1][1:-1]
 
     fig, ax = plt.subplots(figsize=(10,10))
     
-    ax.axis([-0.1, 1.1, -0.5, 4])
+    ax.axis([-0.5, 1.5, -0.5, 4])
 
-    ax.plot( grid, var_initial, label="Initial")
-    ax.plot( grid, var_final, label="Final", linestyle="--")
+    ax.plot( grid, var_initial, label="Initial", color='black')
+    ax.plot( grid, var_final, label="Final", linestyle="--", color='red')
 
     ax.legend()
 

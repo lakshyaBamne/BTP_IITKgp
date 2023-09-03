@@ -61,9 +61,9 @@ vector<vector<double>> SSPRK::get_next_cons_vars(vector<vector<double>>& cons_va
     vector<double> U23(size);
 
     for(int i=1 ; i<=size ; i++){
-        U21[i-1] = ( 3*cons_vars[0][i] + U11[i] - LAMBDA*(cu_flux_u1[0][i] - cu_flux_u1[0][i-1]) ) / 4;
-        U22[i-1] = ( 3*cons_vars[1][i] + U12[i] - LAMBDA*(cu_flux_u1[1][i] - cu_flux_u1[1][i-1]) ) / 4;
-        U23[i-1] = ( 3*cons_vars[2][i] + U13[i] - LAMBDA*(cu_flux_u1[2][i] - cu_flux_u1[2][i-1]) ) / 4;
+        U21[i-1] = ( 3*cons_vars[0][i] + U1[0][i] - LAMBDA*(cu_flux_u1[0][i] - cu_flux_u1[0][i-1]) ) / 4;
+        U22[i-1] = ( 3*cons_vars[1][i] + U1[1][i] - LAMBDA*(cu_flux_u1[1][i] - cu_flux_u1[1][i-1]) ) / 4;
+        U23[i-1] = ( 3*cons_vars[2][i] + U1[2][i] - LAMBDA*(cu_flux_u1[2][i] - cu_flux_u1[2][i-1]) ) / 4;
     }
 
     U2.push_back(U21);
@@ -85,9 +85,9 @@ vector<vector<double>> SSPRK::get_next_cons_vars(vector<vector<double>>& cons_va
     vector<double> Un3(size);
 
     for(int i=1 ; i<=size ; i++){
-        Un1[i-1] = ( cons_vars[0][i] + 2*U21[i] + 2*LAMBDA*( cu_flux_u2[0][i] - cu_flux_u2[0][i-1] ) ) / 3;
-        Un2[i-1] = ( cons_vars[1][i] + 2*U22[i] + 2*LAMBDA*( cu_flux_u2[1][i] - cu_flux_u2[1][i-1] ) ) / 3;
-        Un3[i-1] = ( cons_vars[2][i] + 2*U23[i] + 2*LAMBDA*( cu_flux_u2[2][i] - cu_flux_u2[2][i-1] ) ) / 3;
+        Un1[i-1] = ( cons_vars[0][i] + 2*U2[0][i] - 2*LAMBDA*( cu_flux_u2[0][i] - cu_flux_u2[0][i-1] ) ) / 3;
+        Un2[i-1] = ( cons_vars[1][i] + 2*U2[1][i] - 2*LAMBDA*( cu_flux_u2[1][i] - cu_flux_u2[1][i-1] ) ) / 3;
+        Un3[i-1] = ( cons_vars[2][i] + 2*U2[2][i] - 2*LAMBDA*( cu_flux_u2[2][i] - cu_flux_u2[2][i-1] ) ) / 3;
     }
 
     Unew.push_back(Un1);
@@ -99,6 +99,5 @@ vector<vector<double>> SSPRK::get_next_cons_vars(vector<vector<double>>& cons_va
     return Unew;
 
 }
-
 
 

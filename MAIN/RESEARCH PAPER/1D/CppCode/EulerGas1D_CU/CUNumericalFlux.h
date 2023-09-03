@@ -48,10 +48,19 @@ namespace CUNumericalFlux{
 }
 
 // Function to get the CU Numerical flux given any set of Conserved variables
+/**
+*   @arg cons_vars : 2D vector containing the Conserved variables (rho, m, E)
+*   @arg initial_conditions : Riemann Problem , Boundary Conditions
+*   @arg dt : time step for next iteration
+*   @arg dx : volume(here length) of one cell in the computational domain
+*   @arg t : current time (updated after every iteration using SSPRK)
+**/
 vector<vector<double>> CUNumericalFlux::get_cu_flux( vector<vector<double>>& cons_vars, pair<string,string>& initial_conditions, double& dt, double& dx, double& t, pair<double,double>& time){
     // STEP-1 Get the Piecewise Linear Reconstruction for the conserved variables
     vector<vector<double>> rho_plr = get_plr(cons_vars[0], initial_conditions);
+
     vector<vector<double>> m_plr = get_plr(cons_vars[1], initial_conditions);    
+
     vector<vector<double>> E_plr = get_plr(cons_vars[2], initial_conditions);
 
     // Now we need to calculate the One-Sided Local speeds of propagation (for CU schemes)
@@ -68,6 +77,7 @@ vector<vector<double>> CUNumericalFlux::get_cu_flux( vector<vector<double>>& con
 
     // Anti-diffusion vector (used only when required)
     vector<vector<double>> star = CalculateStar(lsp, f1, f2, f3, rho_plr, m_plr, E_plr);
+    
     vector<vector<double>> ADTerm = CalculateADT(star, rho_plr, m_plr, E_plr);
 
     // Now we can calulate the CU Numerical Flux vector using which the next iteration is obtained
@@ -86,7 +96,7 @@ double CUNumericalFlux::new_dt(vector<vector<double>>& lsp, double dx, double t,
         amax = max( amax , max( lsp[0][i], -1*lsp[1][i] ) );
     }
 
-    double newdt = (0.475*dx)/amax;
+    double newdt = (CTS::CFL * dx)/amax;
 
     if( t + newdt > time.second ){
         newdt = time.second - t;
@@ -125,7 +135,7 @@ vector<double> CUNumericalFlux::get_slx(vector<double>& vars, pair<string,string
 
     for(int i=1 ; i<vars.size()-1 ; i++){
         double val1 = CTS::THETA * ( vars[i+1]-vars[i] );
-        double val2 = CTS::THETA * ( vars[i+1]-vars[i-1] )/2;
+        double val2 = ( vars[i+1]-vars[i-1] )/2;
         double val3 = CTS::THETA * ( vars[i]-vars[i-1] );
 
         slx[i-1] = UTL::minmod( val1, val2, val3 );
@@ -141,14 +151,14 @@ vector<double> CUNumericalFlux::get_slx(vector<double>& vars, pair<string,string
 vector<vector<double>> CUNumericalFlux::primitive_plr(vector<vector<double>>& rho_plr, vector<vector<double>>& m_plr){
     vector<vector<double>> u_plr;
     
-    int size = rho_plr[0].size()-1;
+    int size = rho_plr[0].size();
 
     vector<double> u_E(size);
     vector<double> u_W(size);
 
     for(int i=0 ; i<size ; i++){
         u_E[i] = m_plr[0][i] / rho_plr[0][i];
-        u_W[i] = m_plr[1][i+1] / rho_plr[1][i];
+        u_W[i] = m_plr[1][i] / rho_plr[1][i];
     }
 
     // Ghost values are not required for reconstruction of Primitive variables
@@ -163,14 +173,14 @@ vector<vector<double>> CUNumericalFlux::primitive_plr(vector<vector<double>>& rh
 vector<vector<double>> CUNumericalFlux::primitive_plr(vector<vector<double>>& u_plr, vector<vector<double>>& rho_plr, vector<vector<double>>& E_plr){
     vector<vector<double>> p_plr;
 
-    int size = u_plr[0].size()-1;
+    int size = u_plr[0].size();
 
     vector<double> p_E(size);
     vector<double> p_W(size);
 
     for(int i=0 ; i<size ; i++){
         p_E[i] = (CTS::GAMMA-1)*( E_plr[0][i] - ( (rho_plr[0][i]*u_plr[0][i]*u_plr[0][i] )/2 ) );
-        p_W[i] = (CTS::GAMMA-1)*( E_plr[1][i+1] - ( (rho_plr[1][i+1]*u_plr[1][i]*u_plr[1][i] )/2 ) );
+        p_W[i] = (CTS::GAMMA-1)*( E_plr[1][i] - ( (rho_plr[1][i]*u_plr[1][i]*u_plr[1][i] )/2 ) );
     }
 
     // Ghost values are not required for reconstruction of Primitive variables
@@ -197,13 +207,17 @@ vector<vector<double>> CUNumericalFlux::get_cu_lsp(vector<vector<double>>& rho_p
 
     for(int i=0 ; i<size ; i++){
         double speed_sound_E =  sqrtf( (CTS::GAMMA*p_plr[0][i])/rho_plr[0][i] );
-        double speed_sound_W = sqrtf( (CTS::GAMMA*p_plr[1][i])/rho_plr[1][i+1] );
+        double speed_sound_W = sqrtf( (CTS::GAMMA*p_plr[1][i+1])/rho_plr[1][i+1] );
 
+        // cout << "speed of sound (E) : " << speed_sound_E << endl;
+        // cout << "speed of sound (W) : " << speed_sound_W << endl;
+
+        //! check if this has a problem
         // a+
-        ap[i] = max( 0.0 , max( (u_plr[0][i] + speed_sound_E) , (u_plr[1][i] + speed_sound_W) ) );
+        ap[i] = max( 0.0 , max( (u_plr[0][i] + speed_sound_E) , (u_plr[1][i+1] + speed_sound_W) ) );
 
         // a-
-        am[i] = min( 0.0 , min( (u_plr[0][i] - speed_sound_E) , (u_plr[1][i] - speed_sound_W) ) );
+        am[i] = min( 0.0 , min( (u_plr[0][i] - speed_sound_E) , (u_plr[1][i+1] - speed_sound_W) ) );
     }
 
     // output
@@ -229,8 +243,8 @@ vector<vector<double>> CUNumericalFlux::get_flux(int num, vector<vector<double>>
         //! f1 = rho*u
         case 1:
             for(int i=0 ; i<size ; i++){
-                fE[i] = rho_plr[0][i]*u_plr[0][i];
-                fW[i] = rho_plr[1][i+1]*u_plr[0][i];
+                fE[i] = m_plr[0][i];
+                fW[i] = m_plr[1][i];
             }
 
             break;
@@ -238,7 +252,7 @@ vector<vector<double>> CUNumericalFlux::get_flux(int num, vector<vector<double>>
         case 2:
             for(int i=0 ; i<size ; i++){
                 fE[i] = m_plr[0][i]*u_plr[0][i] + p_plr[0][i];
-                fW[i] = m_plr[1][i+1]*u_plr[1][i] + p_plr[1][i];
+                fW[i] = m_plr[1][i]*u_plr[1][i] + p_plr[1][i];
             }
 
             break;
@@ -246,7 +260,7 @@ vector<vector<double>> CUNumericalFlux::get_flux(int num, vector<vector<double>>
         case 3:
             for(int i=0 ; i<size ; i++){
                 fE[i] = u_plr[0][i]*( E_plr[0][i] + p_plr[0][i] );
-                fW[i] = u_plr[1][i]*( E_plr[1][i+1] + p_plr[1][i] );
+                fW[i] = u_plr[1][i]*( E_plr[1][i] + p_plr[1][i] );
             }
 
             break;
@@ -269,9 +283,9 @@ vector<vector<double>> CUNumericalFlux::CalculateStar(vector<vector<double>>& ls
     vector<double> E_star(size);
 
     for(int i=0 ; i<size ; i++){
-        rho_star[i] = ( lsp[0][i]*rho_plr[1][i+1] - lsp[1][i]*rho_plr[0][i] - (f1[1][i]-f1[0][i]) ) / ( lsp[1][i]-lsp[0][i] );
-        m_star[i] = ( lsp[0][i]*m_plr[1][i+1] - lsp[1][i]*m_plr[0][i] - (f1[1][i]-f1[0][i]) ) / ( lsp[1][i]-lsp[0][i] );
-        E_star[i] = ( lsp[0][i]*E_plr[1][i+1] - lsp[1][i]*E_plr[0][i] - (f1[1][i]-f1[0][i]) ) / ( lsp[1][i]-lsp[0][i] );
+        rho_star[i] = ( lsp[0][i]*rho_plr[1][i+1] - lsp[1][i]*rho_plr[0][i] - (f1[1][i+1]-f1[0][i]) ) / ( lsp[1][i]-lsp[0][i] );
+        m_star[i] = ( lsp[0][i]*m_plr[1][i+1] - lsp[1][i]*m_plr[0][i] - (f2[1][i+1]-f2[0][i]) ) / ( lsp[1][i]-lsp[0][i] );
+        E_star[i] = ( lsp[0][i]*E_plr[1][i+1] - lsp[1][i]*E_plr[0][i] - (f3[1][i+1]-f3[0][i]) ) / ( lsp[1][i]-lsp[0][i] );
     }
 
     Star.push_back(rho_star);
@@ -318,9 +332,9 @@ vector<vector<double>> CUNumericalFlux::get_cu_flux(vector<vector<double>>& lsp,
         if( lsp[0][i]-lsp[1][i] > CTS::EPSILON ){
             // a+ - a- appears in the denominator so it cant be too small
 
-            cu_f1[i] = ( lsp[0][i]*f1[0][i] - lsp[1][i]*f1[1][i] + lsp[0][i]*lsp[1][i]*( rho_plr[1][i+1] - rho_plr[0][i] - ADTerm[0][i] ) ) / ( lsp[0][i]-lsp[1][i] );
-            cu_f2[i] = ( lsp[0][i]*f2[0][i] - lsp[1][i]*f2[1][i] + lsp[0][i]*lsp[1][i]*( m_plr[1][i+1] - m_plr[0][i] - ADTerm[1][i] ) ) / ( lsp[0][i]-lsp[1][i] );
-            cu_f3[i] = ( lsp[0][i]*f3[0][i] - lsp[1][i]*f3[1][i] + lsp[0][i]*lsp[1][i]*( E_plr[1][i+1] - E_plr[0][i] - ADTerm[2][i] ) ) / ( lsp[0][i]-lsp[1][i] );
+            cu_f1[i] = ( lsp[0][i]*f1[0][i] - lsp[1][i]*f1[1][i+1] + lsp[0][i]*lsp[1][i]*( rho_plr[1][i+1] - rho_plr[0][i] - ADTerm[0][i] ) ) / ( lsp[0][i]-lsp[1][i] );
+            cu_f2[i] = ( lsp[0][i]*f2[0][i] - lsp[1][i]*f2[1][i+1] + lsp[0][i]*lsp[1][i]*( m_plr[1][i+1] - m_plr[0][i] - ADTerm[1][i] ) ) / ( lsp[0][i]-lsp[1][i] );
+            cu_f3[i] = ( lsp[0][i]*f3[0][i] - lsp[1][i]*f3[1][i+1] + lsp[0][i]*lsp[1][i]*( E_plr[1][i+1] - E_plr[0][i] - ADTerm[2][i] ) ) / ( lsp[0][i]-lsp[1][i] );
         }
         else{
             cu_f1[i] = 0.5 * ( f1[0][i] + f1[1][i] );
