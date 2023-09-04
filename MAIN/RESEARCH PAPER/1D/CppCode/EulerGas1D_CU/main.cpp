@@ -12,6 +12,7 @@
 #include "SSPRK.h"
 #include "OutputResult.h"
 #include "EulerForwardDifference.h"
+#include "PrimitiveVariables.h"
 
 #define ll long long int
 
@@ -22,6 +23,7 @@ namespace CUF = CUNumericalFlux;
 namespace SRK = SSPRK;
 namespace OPF = OutputResult;
 namespace EFD = EulerForwardDifference;
+namespace PRV = PrimitiveVariables;
 
 int main(){
     
@@ -64,6 +66,17 @@ int main(){
     // -> Ghost values are added according to the given boundary conditions
     vector<vector<double>> cons_vars = IRP::get_conserved_variables(initial_conditions, domain, Nx);
 
+    // //! Writing output to a file for plotting later
+    // OPF::write_vector(cons_vars[0], "Density.txt");
+    // OPF::write_vector(cons_vars[1], "Momentum.txt");
+    // OPF::write_vector(cons_vars[2], "Energy.txt");
+
+    // // convert the conserved variables to primitive variables for plotting
+    // vector< vector<double> > prim_vars = PRV::get_primitive_variables(cons_vars);
+
+    // OPF::write_vector(prim_vars[0], "Velocity.txt");
+    // OPF::write_vector(prim_vars[1], "Pressure.txt");
+
     // Now we can start the iterations
     while( t < time.second ){
         // Log
@@ -71,9 +84,15 @@ int main(){
 
 
         //! Writing output to a file for plotting later
-        OPF::write_vector(cons_vars[0], "Density.txt");
-        OPF::write_vector(cons_vars[1], "Momentum.txt");
-        OPF::write_vector(cons_vars[2], "Energy.txt");
+        OPF::write_vector(cons_vars[0], "Density1.txt");
+        OPF::write_vector(cons_vars[1], "Momentum1.txt");
+        OPF::write_vector(cons_vars[2], "Energy1.txt");
+
+        // convert the conserved variables to primitive variables for plotting
+        vector< vector<double> > prim_vars = PRV::get_primitive_variables(cons_vars);
+
+        OPF::write_vector(prim_vars[0], "Velocity1.txt");
+        OPF::write_vector(prim_vars[1], "Pressure1.txt");
 
         vector<vector<double>> cu_flux = CUF::get_cu_flux(cons_vars, initial_conditions, dt, dx, t, time);
 
@@ -91,6 +110,16 @@ int main(){
             cons_vars[2][i] = cons_vars_next[2][i];
         }
     }
+
+    // //! Writing output to a file for plotting later (only the final values)
+    // OPF::write_vector(cons_vars[0], "Density.txt");
+    // OPF::write_vector(cons_vars[1], "Momentum.txt");
+    // OPF::write_vector(cons_vars[2], "Energy.txt");
+
+    // prim_vars = PRV::get_primitive_variables(cons_vars);
+
+    // OPF::write_vector(prim_vars[0], "Velocity.txt");
+    // OPF::write_vector(prim_vars[1], "Pressure.txt");
 
     return 0;
 }

@@ -99,6 +99,23 @@ vector<vector<double>> InitRiemannProblem::get_conserved_variables(pair<string,s
         }
 
     }
+    else if( initial_conditions.first == "TEST" ){
+        for(int i=0 ; i<grid.size() ; i++){
+            if( grid[i] < 0.5 ){
+                rho[i] = 1.0;
+                u[i] = 0.0;
+                p[i] = 1000.0;
+            }
+            else{
+                rho[i] = 1.0;
+                u[i] = 0.0;
+                p[i] = 0.01;
+            }
+
+            m[i] = rho[i]*u[i];
+            E[i] = p[i]/(CTS::GAMMA-1) + m[i]*u[i]*0.5;
+        }
+    }
     else{
         cout << "---ERROR--- Please enter correct Riemann Problem ---" << endl;
     }

@@ -11,3 +11,4 @@ FortranCode/
 *.o
 *.x
 *.out
+*.txt

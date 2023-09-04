@@ -2,6 +2,8 @@
 
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
+from matplotlib.animation import FuncAnimation
+from itertools import count
 
 def get_grid() -> list:
     """
@@ -18,7 +20,7 @@ def get_grid() -> list:
 
     return grid 
 
-def get_cons_vars(file_name) -> list[list]:
+def get_vars(file_name) -> list[list]:
     """
         Function to extract the Conserved variables into a 2D list
     """
@@ -33,7 +35,7 @@ def get_cons_vars(file_name) -> list[list]:
 
     return cons_var
 
-def plot_cons_vars(grid, cons_var) -> None:
+def plot_vars(grid, cons_var) -> None:
     """
         Function to pring the Initial and final values of the conserved variable only
         grid -> independent computational grid
@@ -44,7 +46,7 @@ def plot_cons_vars(grid, cons_var) -> None:
 
     fig, ax = plt.subplots(figsize=(10,10))
     
-    ax.axis([-0.5, 1.5, -0.5, 4])
+    # ax.axis([-0.5, 1.5, -0.5, 4])
 
     ax.plot( grid, var_initial, label="Initial", color='black')
     ax.plot( grid, var_final, label="Final", linestyle="--", color='red')
@@ -53,19 +55,139 @@ def plot_cons_vars(grid, cons_var) -> None:
 
     plt.show()
 
+def animate_vars(grid, cons_vars, name) -> None:
+    """
+        Function to animate the Movement of the discontinuity
+    """
+    fig, ax = plt.subplots(figsize=(10,10))
+
+    ax.axis([0, 1, -0.5, 3])
+
+    y = []
+
+    # we need to print every line in the cons_vars 2D list one by one
+    counter = count(0,1)
+    def updater(i):
+        ax.clear()
+    
+        # first plot the initial values statically
+        ax.plot( grid, cons_vars[0][1:-1] , label="Initial", color='black')
+    
+        idx = next(counter)
+        
+        y.clear()
+        for e in cons_vars[idx][1:-1]:
+            y.append(e)
+
+        ax.plot(grid,y, color='red', label="Updated")
+        ax.legend()
+
+    ani = FuncAnimation(fig=fig, func=updater, interval=1, frames=len(cons_vars)-2)
+    ani.save(f'{name}.gif') # save the animation
+
+    plt.show()        
+
+def plot_all(grid , all_vars) -> None:
+    """
+        Function to plot all the variables in the same plot
+    """
+    plt.subplot(3,1,1)
+    plt.plot( grid , all_vars[0][0][1:-1] , color='black' , label="Initial Density" )
+    plt.plot( grid , all_vars[0][-1][1:-1] , color='red' , label="Updated Density")
+
+    plt.legend()
+
+    plt.subplot(3,1,2)
+    plt.plot( grid , all_vars[1][0][1:-1] , color='black' , label="Initial Momemtum" )
+    plt.plot( grid , all_vars[1][-1][1:-1] , color='blue' , label="Updated Momentum")
+
+    plt.legend()
+
+    plt.subplot(3,1,3)
+    plt.plot( grid , all_vars[2][0][1:-1] , color='black' , label="Initial Energy" )
+    plt.plot( grid , all_vars[2][-1][1:-1] , color='orange' , label="Updated Energy")
+
+    # plt.subplot(5,1,4)
+    # plt.plot( grid , all_vars[3][0][1:-1] , color='black' , label="Initial Velocity" )
+    # plt.plot( grid , all_vars[3][-1][1:-1] , color='yellow' , label="Updated Velocity")
+
+    # plt.subplot(5,1,5)
+    # plt.plot( grid , all_vars[4][0][1:-1] , color='black' , label="Initial Pressure" )
+    # plt.plot( grid , all_vars[4][-1][1:-1] , color='green' , label="Updated Pressure")
+
+    plt.legend()
+
+    plt.show()
+
+def plot_both( vars_1 , vars_2 ):
+    """
+        Function to plot two together
+    """
+    file_name = "ComputationalDomain.txt"
+
+    grid = []
+
+    with open(file=file_name, mode='r') as f:
+        data = f.readlines()
+
+    for line in data:
+        one_line = list(map(float, line.split()))
+        grid.append(one_line)
+
+    print("100 points")
+    print( len(grid[0]) )
+    print( len(vars_1[0]) )
+
+    print("1000 points")
+    print( len(grid[1]) )
+    print( len(vars_2[0]) )
+
+    plt.plot( grid[0] , vars_1[0] , color='red', label="100 grid points")
+    plt.plot( grid[1] , vars_2[0] , color='blue', label="1000 grid points")
+
+    plt.legend()
+
+    plt.show()
+
+    
 
 #! First we need to open the files to extract useful information to plot
 
 #! 1) Get the computational grid from the file "ComputationalDomain.txt"
-grid = get_grid()
+# grid = get_grid()
 
 #! 2) Get the conserved variables from their corresponding files
-density = get_cons_vars("Density.txt")
-momentum = get_cons_vars("Momentum.txt")
-energy = get_cons_vars("Energy.txt")
+density1 = get_vars("Density1.txt")
+momentum1 = get_vars("Momentum1.txt")
+energy1 = get_vars("Energy1.txt")
+
+density2 = get_vars("Density2.txt")
+momentum2 = get_vars("Momentum2.txt")
+energy2 = get_vars("Energy2.txt")
+
+#! 3) Get the Primitive variavles to plot
+# velocity = get_vars("Velocity.txt")
+# pressure = get_vars("Pressure.txt")
 
 #! Now we need to make plots to visualize these results
 
-plot_cons_vars(grid, density)
-plot_cons_vars(grid, momentum)
-plot_cons_vars(grid, energy)
+# all plots in the same figure
+# plot_all(grid, [density, momentum, energy])
+
+# static plots
+# plot_vars(grid, density1)
+# plot_vars(grid, momentum)
+# plot_vars(grid, energy)
+# plot_vars(grid, velocity)
+# plot_vars(grid, pressure)
+
+# animations
+# animate_vars(grid, density, "density")
+# animate_vars(grid, momentum, "momentum")
+# animate_vars(grid, energy, "energy")
+# animate_vars(grid, velocity, "velocity")
+# animate_vars(grid, pressure, "pressure")
+
+plot_both([density1[-1][1:-1]], [density2[-1][1:-1]])
+
+
