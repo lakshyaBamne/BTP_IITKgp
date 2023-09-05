@@ -99,17 +99,19 @@ vector<vector<double>> InitRiemannProblem::get_conserved_variables(pair<string,s
         }
 
     }
-    else if( initial_conditions.first == "TEST" ){
+    else if( initial_conditions.first == "BLASTWAVE" ){
         for(int i=0 ; i<grid.size() ; i++){
-            if( grid[i] < 0.5 ){
-                rho[i] = 1.0;
-                u[i] = 0.0;
+            rho[i] = 1.0;
+            u[i] = 0.0;
+            
+            if( grid[i] < 0.1 ){
                 p[i] = 1000.0;
             }
-            else{
-                rho[i] = 1.0;
-                u[i] = 0.0;
+            else if( grid[i]>=0.1 && grid[i]<=0.9 ){
                 p[i] = 0.01;
+            }
+            else{
+                p[i] = 100.0;
             }
 
             m[i] = rho[i]*u[i];

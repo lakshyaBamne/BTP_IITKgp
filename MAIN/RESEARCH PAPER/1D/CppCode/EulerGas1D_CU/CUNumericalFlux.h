@@ -27,6 +27,10 @@ namespace CUNumericalFlux{
     vector<vector<double>> get_plr(vector<double>& vars, pair<string,string>& initial_conditions);
     vector<double> get_slx(vector<double>& vars, pair<string,string>& initial_conditions);
 
+    // extra functions
+    vector<vector<double>> get_plr(vector<double>& vars, pair<string,string>& initial_conditions, string var);
+    vector<double> get_slx(vector<double>& vars, pair<string,string>& initial_conditions, string var);
+
     // functions to calculate the PLR for primitive variables used while calculation of the Local Speeds of Propagation
     vector<vector<double>> primitive_plr(vector<vector<double>>& rho_plr, vector<vector<double>>& m_plr);
     vector<vector<double>> primitive_plr(vector<vector<double>>& u_plr ,vector<vector<double>>& rho_plr, vector<vector<double>>& E_plr);
@@ -57,11 +61,14 @@ namespace CUNumericalFlux{
 **/
 vector<vector<double>> CUNumericalFlux::get_cu_flux( vector<vector<double>>& cons_vars, pair<string,string>& initial_conditions, double& dt, double& dx, double& t, pair<double,double>& time){
     // STEP-1 Get the Piecewise Linear Reconstruction for the conserved variables
-    vector<vector<double>> rho_plr = get_plr(cons_vars[0], initial_conditions);
+    // vector<vector<double>> rho_plr = get_plr(cons_vars[0], initial_conditions);
+    // vector<vector<double>> m_plr = get_plr(cons_vars[1], initial_conditions);    
+    // vector<vector<double>> E_plr = get_plr(cons_vars[2], initial_conditions);
 
-    vector<vector<double>> m_plr = get_plr(cons_vars[1], initial_conditions);    
-
-    vector<vector<double>> E_plr = get_plr(cons_vars[2], initial_conditions);
+    // new code to accomodate more boundary conditions
+    vector< vector<double> > rho_plr = get_plr( cons_vars[0], initial_conditions, "density" );
+    vector< vector<double> > m_plr = get_plr( cons_vars[1], initial_conditions, "momentum" );
+    vector< vector<double> > E_plr = get_plr( cons_vars[2], initial_conditions, "energy" );
 
     // Now we need to calculate the One-Sided Local speeds of propagation (for CU schemes)
     vector<vector<double>> lsp = get_cu_lsp(rho_plr, m_plr, E_plr);
@@ -349,4 +356,52 @@ vector<vector<double>> CUNumericalFlux::get_cu_flux(vector<vector<double>>& lsp,
 
     return cu_flux;
 }
+
+
+
+
+/*
+    Extra functions
+*/
+vector<vector<double>> CUNumericalFlux::get_plr(vector<double>& vars, pair<string,string>& initial_conditions, string var){
+    // Calculate the slopes using the min mod limiter
+    vector<double> slx = get_slx(vars, initial_conditions, var);
+    
+    vector<vector<double>> plr;
+
+    vector<double> plr_East(vars.size()-2);
+    vector<double> plr_West(vars.size()-2);
+
+    for(int i=1 ; i<vars.size()-1 ; i++){
+        plr_East[i-1] = vars[i] + slx[i]/2;
+        plr_West[i-1] = vars[i] - slx[i]/2;
+    }
+
+    // extend cells
+    EXC::extend_cells_ind(initial_conditions.second, plr_East, var);
+    EXC::extend_cells_ind(initial_conditions.second, plr_West, var);
+
+    plr.push_back(plr_East);
+    plr.push_back(plr_West);
+
+    return plr;
+}
+
+vector<double> CUNumericalFlux::get_slx(vector<double>& vars, pair<string,string>& initial_conditions, string var){
+    vector<double> slx(vars.size()-2);
+
+    for(int i=1 ; i<vars.size()-1 ; i++){
+        double val1 = CTS::THETA * ( vars[i+1]-vars[i] );
+        double val2 = ( vars[i+1]-vars[i-1] )/2;
+        double val3 = CTS::THETA * ( vars[i]-vars[i-1] );
+
+        slx[i-1] = UTL::minmod( val1, val2, val3 );
+    }
+
+    // extend cell
+    EXC::extend_cells_ind(initial_conditions.second , slx, var);
+
+    return slx;
+}
+
 

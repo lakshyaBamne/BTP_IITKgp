@@ -107,14 +107,6 @@ def plot_all(grid , all_vars) -> None:
     plt.plot( grid , all_vars[2][0][1:-1] , color='black' , label="Initial Energy" )
     plt.plot( grid , all_vars[2][-1][1:-1] , color='orange' , label="Updated Energy")
 
-    # plt.subplot(5,1,4)
-    # plt.plot( grid , all_vars[3][0][1:-1] , color='black' , label="Initial Velocity" )
-    # plt.plot( grid , all_vars[3][-1][1:-1] , color='yellow' , label="Updated Velocity")
-
-    # plt.subplot(5,1,5)
-    # plt.plot( grid , all_vars[4][0][1:-1] , color='black' , label="Initial Pressure" )
-    # plt.plot( grid , all_vars[4][-1][1:-1] , color='green' , label="Updated Pressure")
-
     plt.legend()
 
     plt.show()
@@ -134,22 +126,12 @@ def plot_both( vars_1 , vars_2 ):
         one_line = list(map(float, line.split()))
         grid.append(one_line)
 
-    print("100 points")
-    print( len(grid[0]) )
-    print( len(vars_1[0]) )
-
-    print("1000 points")
-    print( len(grid[1]) )
-    print( len(vars_2[0]) )
-
-    plt.plot( grid[0] , vars_1[0] , color='red', label="100 grid points")
-    plt.plot( grid[1] , vars_2[0] , color='blue', label="1000 grid points")
+    plt.plot( grid[0] , vars_1[0] , color='red', label="Numerical Scheme")
+    plt.plot( grid[1] , vars_2[0] , color='blue', label="Reference")
 
     plt.legend()
 
-    plt.show()
-
-    
+    plt.show()    
 
 #! First we need to open the files to extract useful information to plot
 
@@ -166,8 +148,8 @@ momentum2 = get_vars("Momentum2.txt")
 energy2 = get_vars("Energy2.txt")
 
 #! 3) Get the Primitive variavles to plot
-# velocity = get_vars("Velocity.txt")
-# pressure = get_vars("Pressure.txt")
+# velocity = get_vars("Velocity2.txt")
+# pressure = get_vars("Pressure2.txt")
 
 #! Now we need to make plots to visualize these results
 
@@ -182,7 +164,7 @@ energy2 = get_vars("Energy2.txt")
 # plot_vars(grid, pressure)
 
 # animations
-# animate_vars(grid, density, "density")
+# animate_vars(grid, density1, "density")
 # animate_vars(grid, momentum, "momentum")
 # animate_vars(grid, energy, "energy")
 # animate_vars(grid, velocity, "velocity")
