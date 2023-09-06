@@ -83,7 +83,7 @@ def animate_vars(grid, cons_vars, name) -> None:
         ax.legend()
 
     ani = FuncAnimation(fig=fig, func=updater, interval=1, frames=len(cons_vars)-2)
-    ani.save(f'{name}.gif') # save the animation
+    ani.save(f'{name}.mp4', fps=360) # save the animation
 
     plt.show()        
 

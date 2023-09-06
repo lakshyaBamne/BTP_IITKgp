@@ -26,9 +26,9 @@ namespace OPF = OutputResult;
 
 namespace InitRiemannProblem{
     // Function to initialize the grid based on initial conditions entered by the user
-    vector<double> make_grid(pair<double,double>& domain, ll Nx);
+    vector<double> make_grid(pair<double,double>& domain, ll Nx, string result);
     // Function to Initialize the Conserved variables vectors based on the Riemann Problem
-    vector<vector<double>> get_conserved_variables(pair<string,string>& initial_conditions, pair<double,double>& domain, ll Nx);
+    vector<vector<double>> get_conserved_variables(pair<string,string>& initial_conditions, pair<double,double>& domain, ll Nx, string result);
 
     // Log functions for debugging
     void print_grid(vector<double>& grid);
@@ -36,9 +36,11 @@ namespace InitRiemannProblem{
 }
 
 // Function to initialize the computational grid
-vector<double> InitRiemannProblem::make_grid(pair<double,double>& domain, ll Nx){
+vector<double> InitRiemannProblem::make_grid(pair<double,double>& domain, ll Nx, string result){
     double xlen = domain.second - domain.first;
     double dx = xlen/Nx;
+
+    string file_grid = result + "/ComputationalDomain.txt";
 
     vector<double> grid(Nx);
 
@@ -47,14 +49,14 @@ vector<double> InitRiemannProblem::make_grid(pair<double,double>& domain, ll Nx)
     }
 
     // write the grid in a file
-    OPF::write_vector(grid, "ComputationalDomain.txt");
+    OPF::write_vector(grid, file_grid);
 
     return grid;
 }
 
 // Function to get the Conserved variable vectors according to the Given Riemann problem
-vector<vector<double>> InitRiemannProblem::get_conserved_variables(pair<string,string>& initial_conditions, pair<double,double>& domain, ll Nx){
-    vector<double> grid = InitRiemannProblem::make_grid(domain, Nx); // initialize the grid
+vector<vector<double>> InitRiemannProblem::get_conserved_variables(pair<string,string>& initial_conditions, pair<double,double>& domain, ll Nx, string result){
+    vector<double> grid = InitRiemannProblem::make_grid(domain, Nx, result); // initialize the grid
 
     vector<vector<double>> cons_vars;
 
@@ -107,7 +109,7 @@ vector<vector<double>> InitRiemannProblem::get_conserved_variables(pair<string,s
             if( grid[i] < 0.1 ){
                 p[i] = 1000.0;
             }
-            else if( grid[i]>=0.1 && grid[i]<=9 ){
+            else if( grid[i]>=0.1 && grid[i]<=0.9 ){
                 p[i] = 0.01;
             }
             else{

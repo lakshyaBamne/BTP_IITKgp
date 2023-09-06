@@ -57,7 +57,7 @@ int main(){
     cin >> initial_conditions.second;
 
     double dt;
-    double t=0; // initial time
+    double t=time.first; // initial time
     double dx = (domain.second - domain.first)/Nx;
 
     // STEP 1 Initialize the Conserved variable vectors using the Initial conditions
@@ -83,15 +83,15 @@ int main(){
         cout << "t = " << t << " | dt = " << dt << endl;
 
         //! Writing output to a file for plotting later
-        OPF::write_vector(cons_vars[0], "Density2.txt");
-        OPF::write_vector(cons_vars[1], "Momentum2.txt");
-        OPF::write_vector(cons_vars[2], "Energy2.txt");
+        OPF::write_vector(cons_vars[0], "Density1.txt");
+        OPF::write_vector(cons_vars[1], "Momentum1.txt");
+        OPF::write_vector(cons_vars[2], "Energy1.txt");
 
         // convert the conserved variables to primitive variables for plotting
         vector< vector<double> > prim_vars = PRV::get_primitive_variables(cons_vars);
 
-        OPF::write_vector(prim_vars[0], "Velocity2.txt");
-        OPF::write_vector(prim_vars[1], "Pressure2.txt");
+        OPF::write_vector(prim_vars[0], "Velocity1.txt");
+        OPF::write_vector(prim_vars[1], "Pressure1.txt");
 
         vector<vector<double>> cu_flux = CUF::get_cu_flux(cons_vars, initial_conditions, dt, dx, t, time);
 
