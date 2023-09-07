@@ -35,7 +35,7 @@ int main(){
         return 0;
     }
 
-
+    // start the program based on the mode chosen by the user
     if( mode == "COMPLETE" ){
         GetInput I;
         I.run_cu_scheme_complete("result");
@@ -44,14 +44,14 @@ int main(){
         GetInput I;
         I.run_cu_scheme_partial("result");
     }
-    else if( mode == "PLOT-PARTIAL" ){
+    else if( mode == "PLOT-PARTIAL" ){ // for plotting result graphs with reference
         GetInput I1;
         I1.run_cu_scheme_partial("result1");
     
         GetInput I2;
         I2.run_cu_scheme_partial("result2");
     }
-    else if( mode == "ANIMATE-ALL" ){
+    else if( mode == "ANIMATE-ALL" ){ // for animating result graphs with reference
         GetInput I1;
         I1.run_cu_scheme_complete("result1");
 

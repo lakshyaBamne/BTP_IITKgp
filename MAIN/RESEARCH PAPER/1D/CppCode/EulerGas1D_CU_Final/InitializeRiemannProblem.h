@@ -101,7 +101,7 @@ vector<vector<double>> InitRiemannProblem::get_conserved_variables(pair<string,s
         }
 
     }
-    else if( initial_conditions.first == "BLASTWAVE" ){
+    else if( initial_conditions.first == "BLW" ){
         for(int i=0 ; i<grid.size() ; i++){
             rho[i] = 1.0;
             u[i] = 0.0;
@@ -114,6 +114,24 @@ vector<vector<double>> InitRiemannProblem::get_conserved_variables(pair<string,s
             }
             else{
                 p[i] = 100.0;
+            }
+
+            m[i] = rho[i]*u[i];
+            E[i] = p[i]/(CTS::GAMMA-1) + m[i]*u[i]*0.5;
+        }
+    }
+    else if( initial_conditions.first == "LAX" ){
+        for(int i=0 ; i<grid.size() ; i++){
+            
+            if( grid[i] < 0.5 ){
+                rho[i] = 0.445;
+                u[i] = 0.698;
+                p[i] = 3.528;
+            }
+            else{
+                rho[i] = 0.5;
+                u[i] = 0.0;
+                p[i] = 0.571;
             }
 
             m[i] = rho[i]*u[i];

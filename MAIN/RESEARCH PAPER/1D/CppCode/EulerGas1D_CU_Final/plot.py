@@ -52,53 +52,91 @@ def get_vars(file_name):
 
     return var
 
-def plot_one(grid, var, title, env):
+def plot():
     """
-        Function to plot a single variable at initial and final iteration
+        Function to plot conserved and primitive variables at initial and final iteration
+        for both low and high precision
+
+        -> initial state
+        -> CU Scheme (low precision)
+        -> Reference (high precision)
     """
-    fig, ax = plt.subplots(figsize=(10,10))
+    
+    # get the environment
+    env = get_env()
 
-    ax.plot( grid , var[0] , label="Initial" , color="red" )
-    ax.plot( grid , var[-1] , label="Final" , color="blue" )
+    grid1 = get_grid("result1/ComputationalDomain.txt")
 
-    ax.set_title(title)
-    ax.legend()
+    density1 = get_vars("result1/Density.txt")
+    momentum1 = get_vars("result1/Momentum.txt")
+    energy1 = get_vars("result1/Energy.txt")
+    velocity1 = get_vars("result1/Velocity.txt")
+    pressure1 = get_vars("result1/Pressure.txt")
 
+    grid2 = get_grid("result2/ComputationalDomain.txt")
+
+    density2 = get_vars("result2/Density.txt")
+    momentum2 = get_vars("result2/Momentum.txt")
+    energy2 = get_vars("result2/Energy.txt")
+    velocity2 = get_vars("result2/Velocity.txt")
+    pressure2 = get_vars("result2/Pressure.txt")
+
+    vars1 = [density1, momentum1, energy1, velocity1, pressure1]
+    vars2 = [density2, momentum2, energy2, velocity2, pressure2]
+
+    fig, axd = plt.subplot_mosaic(
+        [
+            ['density' , 'density'],
+            ['momentum', 'energy'],
+            ['velocity', 'pressure']
+        ],
+        figsize=(10,10),
+        layout="constrained"
+    )
+
+    # add styling to the figure
+    fig.set_facecolor("lavender")
+
+    ind = 0
+    for ax in axd:
+        axd[ax].plot(grid1, vars1[ind][0], label=f"{ax} - Initial", color="black", linestyle="--")
+
+        axd[ax].plot(grid1, vars1[ind][-1], label=f"{ax} - CU Plot", color="orange")
+        axd[ax].plot(grid2, vars2[ind][-1], label=f"{ax} - Reference", color="purple")
+
+        axd[ax].legend()
+        axd[ax].set_title(ax)
+
+        ind += 1
+
+    # set super title for the plot
+    if env["problem"] == "MCW":
+        fig.suptitle("Moving Contact Wave")
+    elif env["problem"] == "SCW":
+        fig.suptitle("Stationary Contact Wave")
+    elif env["problem"] == "BLW":
+        fig.suptitle("Blastwave Problem")
+    elif env["problem"] == "LAX":
+        fig.suptitle("Lax Problem")
+
+    plt.savefig(f"plots/{env['problem']}.png")
     plt.show()
 
-def animate_one(grid, var):
+def animate():
     """
-        Function to animate a single Variable from initial to final iteration
+        Function to animate conserved and primitive Variables from initial to final iteration
+        -> initial state => static
+        -> CU Scheme (low precision) => animated
+        -> Reference Scheme (high precision) => animated
     """
+
 
     
 
 # plot graphs based on mode being used by the user stored in the environment
-env = get_env();
-
-if env["mode"]=="COMPLETE":
-    # all the data files are present in the /result directory
-    grid = get_grid("result/ComputationalDomain.txt")
-    var = get_vars("result/Density.txt")
-
-    # plot
-    plot_one(grid, var, "Density", env)
-    
+plot()
 
 
-elif env["mode"]=="PARTIAL":
-    grid = get_grid("result/ComputationalGrid.txt")
-    var = get_vars("result/Density.txt")
 
-    # plot
-    plot_one(grid, var, "Density", env)
 
-# elif mode=="PLOT-PARTIAL":
-#     grid1 = get_grid("result1/ComputationalGrid.txt") 
-#     grid2 = get_grid("result2/ComputationalGrid.txt")
-    
 
-# elif mode=="ANIMATE-ALL":
-#     pass
-# else:
-#     print("---ERROR--- Please enter a correct mode ---")
