@@ -11,6 +11,7 @@
 #include<vector>
 #include<utility>
 #include<string>
+#include<cmath>
 
 #include "Constants.h"
 #include "ExtendCells.h"
@@ -68,6 +69,8 @@ vector<vector<double>> InitRiemannProblem::get_conserved_variables(pair<string,s
 
     if( initial_conditions.first == "MCW" ){
         // Moving Contact Wave (MCW)
+        // x[0,1] -> 0.3
+        // t[0,2]
         for(int i=0 ; i<grid.size() ; i++){
             if( grid[i] < 0.3 ){
                 rho[i] = 1.4;
@@ -84,13 +87,15 @@ vector<vector<double>> InitRiemannProblem::get_conserved_variables(pair<string,s
         }
     }
     else if( initial_conditions.first == "SCW" ){
-        // Stationary contact wave(SCW)
+        // Stationary contact wave and travelling shock and rarefaction (SCW)
+        //
+        //
         for(int i=0 ; i<grid.size() ; i++){
             rho[i] = 1.0;
             u[i] = -19.59745;
             
             if( grid[i] < 0.8 ){
-                p[i] = 1000;
+                p[i] = 1000.0;
             }
             else{
                 p[i] = 0.01;
@@ -102,6 +107,10 @@ vector<vector<double>> InitRiemannProblem::get_conserved_variables(pair<string,s
 
     }
     else if( initial_conditions.first == "BLW" ){
+        // Blast wave problem
+        // x[0,1] -> 0.1 and 0.9
+        // t[0, 0.038]
+        // Reflective Boundary Conditions
         for(int i=0 ; i<grid.size() ; i++){
             rho[i] = 1.0;
             u[i] = 0.0;
@@ -121,9 +130,12 @@ vector<vector<double>> InitRiemannProblem::get_conserved_variables(pair<string,s
         }
     }
     else if( initial_conditions.first == "LAX" ){
+        // Lax problem
+        // x[-5,5] -> 0.0
+        // t[0,1.3]
         for(int i=0 ; i<grid.size() ; i++){
             
-            if( grid[i] < 0.5 ){
+            if( grid[i] < 0.0 ){
                 rho[i] = 0.445;
                 u[i] = 0.698;
                 p[i] = 3.528;
@@ -137,6 +149,138 @@ vector<vector<double>> InitRiemannProblem::get_conserved_variables(pair<string,s
             m[i] = rho[i]*u[i];
             E[i] = p[i]/(CTS::GAMMA-1) + m[i]*u[i]*0.5;
         }
+    }
+    else if( initial_conditions.first == "SOD" ){
+        // Sod's shock tube problem
+        // x[-10,10] -> 0
+        // t[0,0.01]
+        for(int i=0 ; i<grid.size() ; i++){
+            
+            if( grid[i] < 0.0 ){
+                rho[i] = 1.0;
+                u[i] = 0.0;
+                p[i] = 100000.0;
+            }
+            else{
+                rho[i] = 0.125;
+                u[i] = 0.0;
+                p[i] = 10000.0;
+            }
+
+            m[i] = rho[i]*u[i];
+            E[i] = p[i]/(CTS::GAMMA-1) + m[i]*u[i]*0.5;
+        }
+
+    }
+    else if( initial_conditions.first == "SPP" ){
+        // Sonic Point Problem
+        // x[0,1] -> 0.3
+        // t[0,0.2]
+        for(int i=0 ; i<grid.size() ; i++){
+            
+            if( grid[i] < 0.3 ){
+                rho[i] = 1.0;
+                u[i] = 0.75;
+                p[i] = 1.0;
+            }
+            else{
+                rho[i] = 0.125;
+                u[i] = 0.0;
+                p[i] = 0.1;
+            }
+
+            m[i] = rho[i]*u[i];
+            E[i] = p[i]/(CTS::GAMMA-1) + m[i]*u[i]*0.5;
+        }
+
+    }
+    else if( initial_conditions.first == "SSW" ){
+        // Strong Shock wave
+        // x[0,1] -> 0.5
+        // t[0,0.012]
+        for(int i=0 ; i<grid.size() ; i++){
+            
+            if( grid[i] < 0.5 ){
+                rho[i] = 1.0;
+                u[i] = 0.0;
+                p[i] = 1000.0;
+            }
+            else{
+                rho[i] = 1.0;
+                u[i] = 0.0;
+                p[i] = 0.01;
+            }
+
+            m[i] = rho[i]*u[i];
+            E[i] = p[i]/(CTS::GAMMA-1) + m[i]*u[i]*0.5;
+        }
+
+    }
+    else if( initial_conditions.first == "MA3" ){
+        // Mach-3 Problem
+        // x[0,1] -> 0.4
+        // t[0,0.1]
+        for(int i=0 ; i<grid.size() ; i++){
+            
+            if( grid[i] < 0.4 ){
+                rho[i] = 3.857;
+                u[i] = 0.92;
+                p[i] = 10.333;
+            }
+            else{
+                rho[i] = 1.0;
+                u[i] = 3.55;
+                p[i] = 1.0;
+            }
+
+            m[i] = rho[i]*u[i];
+            E[i] = p[i]/(CTS::GAMMA-1) + m[i]*u[i]*0.5;
+        }
+
+    }
+    else if( initial_conditions.first == "SDW" ){
+        // Shock density wave problem
+        // x[-5,15] -> -4
+        // t[0,5]
+        for(int i=0 ; i<grid.size() ; i++){
+            
+            if( grid[i] < -4 ){
+                rho[i] = 27/7;
+                u[i] = ( 4*sqrt(35) )/9;
+                p[i] = 31/3;
+            }
+            else{
+                rho[i] = 1 + 0.2*( sin( 5*grid[i] ) );
+                u[i] = 0.0;
+                p[i] = 1.0;
+            }
+
+            m[i] = rho[i]*u[i];
+            E[i] = p[i]/(CTS::GAMMA-1) + m[i]*u[i]*0.5;
+        }
+
+    }
+    else if( initial_conditions.first == "SEW" ){
+        // Shock entropy wave problem
+        // x[-5,5] -> -4.5
+        // t[0,5]
+        for(int i=0 ; i<grid.size() ; i++){
+            
+            if( grid[i] < -4.5 ){
+                rho[i] = 1.51695;
+                u[i] = 0.523346;
+                p[i] = 1.805;
+            }
+            else{
+                rho[i] = 1 + 0.1*( sin( 20*grid[i] ) );
+                u[i] = 0.0;
+                p[i] = 1.0;
+            }
+
+            m[i] = rho[i]*u[i];
+            E[i] = p[i]/(CTS::GAMMA-1) + m[i]*u[i]*0.5;
+        }
+
     }
     else{
         cout << "---ERROR--- Please enter correct Riemann Problem ---" << endl;

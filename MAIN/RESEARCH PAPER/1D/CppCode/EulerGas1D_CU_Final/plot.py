@@ -118,6 +118,18 @@ def plot():
         fig.suptitle("Blastwave Problem")
     elif env["problem"] == "LAX":
         fig.suptitle("Lax Problem")
+    elif env["problem"] == "SOD":
+        fig.suptitle("Sod shock tube problem")
+    elif env["problem"] == "SPP":
+        fig.suptitle("Sonic point problem")
+    elif env["problem"] == "SSW":
+        fig.suptitle("Strong Shock wave problem")
+    elif env["problem"] == "MA3":
+        fig.suptitle("Mach-3 problem")
+    elif env["problem"] == "SDW":
+        fig.suptitle("Shock Density Wave")
+    elif env["problem"] == "SEW":
+        fig.suptitle("Shock Entropy Wave")
 
     plt.savefig(f"plots/{env['problem']}.png")
     plt.show()
