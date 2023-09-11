@@ -9,7 +9,6 @@ mkdir -p plots
 find . -name "*.txt" -type f -delete
 find . -name "*.gif" -type f -delete
 # find . -name "*.png" -type f -delete
-
 find . -name "*.exe" -type f -delete
 find . -name "*.x" -type f -delete
 

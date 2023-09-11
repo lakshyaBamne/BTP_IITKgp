@@ -1,3 +1,10 @@
+/*
+    * @author Lakshya Bamne(20MA20029) student @IIT Kharagpur, semester-7 (Mathematics and Computing)
+    * 1-Dimensional Central Upwind Scheme
+    * Supervisor - Prof. Naveen Kumar Garg (IIT Kharagpur, Dept. of Mathematics)
+*/
+
+
 #include<iostream>
 #include<vector>
 
