@@ -20,6 +20,7 @@ namespace Constants{
     const double EPSILON = 1.0E-12;
     const double PI = 3.14159;
     const double CFL = 0.475;
+    const double SMOOTHP = 0.00625;
 
     // Constants for Raleigh Taylor Instability 
     const double GAMMA_RT = 5/3;

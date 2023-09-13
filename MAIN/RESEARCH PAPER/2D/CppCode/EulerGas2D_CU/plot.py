@@ -56,11 +56,6 @@ def read_matrix(file, n):
 
     return data
 
-def read_grid(mode):
-    """
-        Function to re
-    """
-
 def plot(var, env_cu, env_ref):
     """
         Function to plot the heat maps for a variable for both CU and reference
@@ -83,7 +78,8 @@ def plot(var, env_cu, env_ref):
     # CU heat map
     hm1 = axd["CU"].imshow(
         data_cu,
-        cmap="YlGnBu",
+        # cmap="YlGnBu",
+        cmap="jet",
         origin="lower",
         extent=[ env_cu["domX"][0], env_cu["domX"][1], env_cu["domY"][0], env_cu["domY"][1] ],    
     )
@@ -93,7 +89,8 @@ def plot(var, env_cu, env_ref):
     # Reference heat map
     hm2 = axd["REF"].imshow(
         data_ref,
-        cmap="YlGnBu",
+        # cmap="YlGnBu",
+        cmap="jet",
         origin="lower",
         extent=[ env_ref["domX"][0], env_ref["domX"][1], env_ref["domY"][0], env_ref["domY"][1] ],
     )
@@ -105,16 +102,56 @@ def plot(var, env_cu, env_ref):
     plt.savefig(f"plots/{env_cu['PROBLEM']}_{var}.png")
     plt.show()
 
+def plot_cu(var, env_cu):
+    """
+        Function to only plot the CU plot
+        -> reference takes too much time to generate for some problems
+    """
+
+    fig, axd = plt.subplot_mosaic(
+        [
+            ['CU']
+        ],
+        figsize=(10,10),
+        layout="constrained"
+    )
+    
+    file_cu = "result1/" + var + ".txt"
+
+    data_cu = read_matrix(file_cu, env_cu["Ny"])
+    
+    # CU heat map
+    hm1 = axd["CU"].imshow(
+        data_cu,
+        # cmap="YlGnBu",
+        cmap="jet",
+        origin="lower",
+        extent=[ env_cu["domX"][0], env_cu["domX"][1], env_cu["domY"][0], env_cu["domY"][1] ],    
+    )
+    axd["CU"].set_title("Central Upwind Scheme")
+    fig.colorbar(hm1, ax=axd["CU"])
+
+    fig.suptitle(f"{env_cu['PROBLEM']} {var}")
+
+    plt.savefig(f"plots/{env_cu['PROBLEM']}_{var}(CU_only).png")
+    plt.show()
+
 #! Main plotting starts
 if __name__ == "__main__":
 
     # get environment
     env_cu = get_env("CU")
-    env_ref = get_env("REF")
+    # env_ref = get_env("REF")
 
-    # plot conserved variables
-    plot("Density", env_cu, env_ref)
+    # # plot conserved variables
+    # plot("Density", env_cu, env_ref)
     # plot("MomentumX", env_cu, env_ref)
     # plot("MomentumY", env_cu, env_ref)
     # plot("Energy", env_cu, env_ref)
+    
+    # # plot primitive variables
+    # plot("Pressure", env_cu, env_ref)
+    # plot("VelocityX", env_cu, env_ref)
+    # plot("VelocityY", env_cu, env_ref)
 
+    plot_cu("Density", env_cu)
