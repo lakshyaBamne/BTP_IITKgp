@@ -136,6 +136,12 @@ def plot_cu(var, env_cu):
     plt.savefig(f"plots/{env_cu['PROBLEM']}_{var}(CU_only).png")
     plt.show()
 
+def plot_initial_final():
+    """
+        Function to plot initial and final CU scheme
+    """
+    
+
 #! Main plotting starts
 if __name__ == "__main__":
 
@@ -153,7 +159,6 @@ if __name__ == "__main__":
     # plot("Pressure", env_cu, env_ref)
     # plot("VelocityX", env_cu, env_ref)
     # plot("VelocityY", env_cu, env_ref)
-
 
     # for plotting only the CU plot (fast)
     plot_cu("Density", env_cu)

@@ -186,7 +186,7 @@ public: // everything is public
                 dy = (double)3/1024;
 
                 time.first = 0;
-                time.second = 1; // also evaluate results at t=2.5 and t=4
+                time.second = 2.5; // evaluate results at t=1, t=2.5 and t=4
 
                 t = time.first;
 
@@ -653,10 +653,10 @@ public: // everything is public
         cout << "---LOG--- Initialized the variables ---" << endl;
 
         // extend cells
-        EXC::extend_matrix(rho, bc, "Density");
-        EXC::extend_matrix(mx, bc, "MomentumX");
-        EXC::extend_matrix(my, bc, "MomentumY");
-        EXC::extend_matrix(E, bc, "Energy");
+        EXC::extend_matrix(rho, bc);
+        EXC::extend_matrix(mx, bc);
+        EXC::extend_matrix(my, bc);
+        EXC::extend_matrix(E, bc);
         
         cout << "---LOG--- Extended cells successfully ---" << endl;
 
@@ -833,10 +833,10 @@ public: // everything is public
             }
         }
 
-        EXC::extend_matrix(rho1, bc, "Density");
-        EXC::extend_matrix(mx1, bc, "MomentumX");
-        EXC::extend_matrix(my1, bc, "MomentumY");
-        EXC::extend_matrix(E1, bc, "Energy");
+        EXC::extend_matrix(rho1, bc);
+        EXC::extend_matrix(mx1, bc);
+        EXC::extend_matrix(my1, bc);
+        EXC::extend_matrix(E1, bc);
 
         // STAGE-2
         vvvvd cu_flux_1 = get_cu_flux(rho1, mx1, my1, E1);
@@ -860,10 +860,10 @@ public: // everything is public
             }
         }
 
-        EXC::extend_matrix(rho2, bc, "Density");
-        EXC::extend_matrix(mx2, bc, "MomentumX");
-        EXC::extend_matrix(my2, bc, "MomentumY");
-        EXC::extend_matrix(E2, bc, "Energy");
+        EXC::extend_matrix(rho2, bc);
+        EXC::extend_matrix(mx2, bc);
+        EXC::extend_matrix(my2, bc);
+        EXC::extend_matrix(E2, bc);
 
         // STAGE-3
         vvvvd cu_flux_new = get_cu_flux(rho2, mx2, my2, E2);
@@ -887,10 +887,10 @@ public: // everything is public
             }
         }
 
-        EXC::extend_matrix(rhon, bc, "Density");
-        EXC::extend_matrix(mxn, bc, "MomentumX");
-        EXC::extend_matrix(myn, bc, "MomentumY");
-        EXC::extend_matrix(En, bc, "Energy");
+        EXC::extend_matrix(rhon, bc);
+        EXC::extend_matrix(mxn, bc);
+        EXC::extend_matrix(myn, bc);
+        EXC::extend_matrix(En, bc);
 
         // Updation of conserved variables to new values
         rho = rhon;
@@ -908,10 +908,10 @@ public: // everything is public
         /*
             STEP-1 : Piecewise Linear Reconstruction [N, S, E, W, NE, NW, SE, SW]
         */
-        vvvd rho_plr = get_plr(rho, "Density");
-        vvvd mx_plr = get_plr(mx, "MomentumX");
-        vvvd my_plr = get_plr(my, "MomentumY");
-        vvvd E_plr = get_plr(E, "Energy");
+        vvvd rho_plr = get_plr(rho);
+        vvvd mx_plr = get_plr(mx);
+        vvvd my_plr = get_plr(my);
+        vvvd E_plr = get_plr(E);
 
         /*
             STEP-2 : Piecewise Linear Reconstruction [a+, a-, b+, b-]
@@ -951,6 +951,7 @@ public: // everything is public
     }
 
     // Function to calculate the CU fluxes F(U) and G(U)
+    //! checked manually
     vvvd get_cu_x(vvvd& rho_plr, vvvd& mx_plr, vvvd& my_plr, vvvd& E_plr, vvvd& lsp, vvvd& flux_E, vvvd& flux_W, vvvd& adt){
         // Calculate the CU Numerical flux using all the intermediate terms
         vvvd F;
@@ -999,6 +1000,7 @@ public: // everything is public
         return F;
     }
 
+    //! checked manually
     vvvd get_cu_y(vvvd& rho_plr, vvvd& mx_plr, vvvd& my_plr, vvvd& E_plr, vvvd& lsp, vvvd& flux_N, vvvd& flux_S, vvvd& adt){
         // Calculate the CU Numerical flux using all the intermediate terms
         vvvd G;
@@ -1048,6 +1050,7 @@ public: // everything is public
     }
 
     // Function to calculate new time step using the CFL conditions
+    //! checked manually (confirm later)
     void new_dt(vvvd& lsp_x, vvvd& lsp_y){
         double amax=0; 
         double bmax=0;
@@ -1090,7 +1093,7 @@ public: // everything is public
     // function to obtain the PLR of a given conserved variable
     // used as a subroutine in CU flux calculation
     //! checked manually
-    vvvd get_plr(vvd& var, string var_name){
+    vvvd get_plr(vvd& var){
         vvd slx = get_slx(var);        
         vvd sly = get_sly(var);        
 
@@ -1122,14 +1125,14 @@ public: // everything is public
         }
 
         // extend cells for the piecewise linear reconstructions
-        EXC::extend_matrix(n, bc, var_name);
-        EXC::extend_matrix(s, bc, var_name);
-        EXC::extend_matrix(e, bc, var_name);
-        EXC::extend_matrix(w, bc, var_name);
-        EXC::extend_matrix(ne, bc, var_name);
-        EXC::extend_matrix(nw, bc, var_name);
-        EXC::extend_matrix(se, bc, var_name);
-        EXC::extend_matrix(sw, bc, var_name);
+        EXC::extend_matrix(n, bc);
+        EXC::extend_matrix(s, bc);
+        EXC::extend_matrix(e, bc);
+        EXC::extend_matrix(w, bc);
+        EXC::extend_matrix(ne, bc);
+        EXC::extend_matrix(nw, bc);
+        EXC::extend_matrix(se, bc);
+        EXC::extend_matrix(sw, bc);
 
         plr.push_back(n);
         plr.push_back(s);
@@ -1146,6 +1149,7 @@ public: // everything is public
 
     // functions to get the slx and sly matrices
     // used as a subroutine in PLR calculation
+    //! checked manually
     vvd get_slx(vvd& var){
         int row = var.size();
         int col = var[0].size();
@@ -1165,6 +1169,7 @@ public: // everything is public
         return slx;
     }
 
+    //! checked manually
     vvd get_sly(vvd& var){
         int row = var.size();
         int col = var[0].size();
@@ -1186,6 +1191,7 @@ public: // everything is public
 
     // function to calculate the One sided local speeds of propagations
     // a+, a-
+    //! checked manually
     vvvd get_lsp_a(vvvd& rho_plr, vvvd& mx_plr, vvvd& my_plr, vvvd& E_plr){
         double GAMMA;
         
@@ -1239,6 +1245,7 @@ public: // everything is public
     }   
 
     // b+, b-
+    //! checked manually
     vvvd get_lsp_b(vvvd& rho_plr, vvvd& mx_plr, vvvd& my_plr, vvvd& E_plr){
         double GAMMA;
         
@@ -1293,6 +1300,7 @@ public: // everything is public
 
     // Functions to calculate the Anti-diffusion terms
     // rho_adt, mx_adt, my_adt, E_adt
+    //! checked manually
     vvvd get_adt_x(vvvd& rho_plr, vvvd& mx_plr, vvvd& my_plr, vvvd& E_plr, vvvd& lsp, vvvd& flux_E, vvvd& flux_W){
         vvd rho_star = get_star_x(rho_plr, lsp, flux_E[0], flux_W[0]);
         vvd mx_star = get_star_x(mx_plr, lsp, flux_E[1], flux_W[1]);
@@ -1350,6 +1358,7 @@ public: // everything is public
         return adt;
     }
 
+    //! checked manually
     vvvd get_adt_y(vvvd& rho_plr, vvvd& mx_plr, vvvd& my_plr, vvvd& E_plr, vvvd& lsp, vvvd& flux_N, vvvd& flux_S){
         vvd rho_star = get_star_y(rho_plr, lsp, flux_N[0], flux_S[0]);
         vvd mx_star = get_star_y(mx_plr, lsp, flux_N[1], flux_S[1]);
@@ -1408,6 +1417,7 @@ public: // everything is public
     }
 
     // Functions to calculate the Intermediate star terms used in calculation for the Anti-diffusion terms
+    //! checked manually
     vvd get_star_x(vvvd& plr, vvvd& lsp, vvd& flux_E, vvd& flux_W){
         int row = plr[0].size();
         int col = plr[0][0].size();
@@ -1423,6 +1433,7 @@ public: // everything is public
         return star;
     }
 
+    //! checked manually
     vvd get_star_y(vvvd& plr, vvvd& lsp, vvd& flux_N, vvd& flux_S){
         int row = plr[0].size();
         int col = plr[0][0].size();
