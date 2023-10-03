@@ -110,6 +110,7 @@ public: // everything is public
 
                 t = time.first;
 
+                // free conditions
                 bc["N"] = "FREE";
                 bc["S"] = "FREE";
                 bc["E"] = "FREE";
@@ -130,6 +131,7 @@ public: // everything is public
 
                 t = time.first;
 
+                // free conditions
                 bc["N"] = "FREE";
                 bc["S"] = "FREE";
                 bc["E"] = "FREE";
@@ -150,6 +152,7 @@ public: // everything is public
 
                 t = time.first;
 
+                // reflective+free conditions
                 bc["N"] = "FREE";
                 bc["S"] = "REF";
                 bc["E"] = "FREE";
@@ -163,17 +166,21 @@ public: // everything is public
                 domY.second = 0.3;
 
                 dx = (double)3/6000;
-                dy = (double)3/6000;
+                dy = (double)3/8000;
+
+                // dx = (double)3/600;
+                // dy = (double)3/800;
 
                 time.first = 0;
                 time.second = 2.5;
 
                 t = time.first;
 
-                bc["N"] = "REF";
-                bc["S"] = "REF";
-                bc["E"] = "REF";
-                bc["W"] = "REF";
+                // solidwall conditions
+                bc["N"] = "SOL";
+                bc["S"] = "SOL";
+                bc["E"] = "SOL";
+                bc["W"] = "SOL";
             }
             else if( problem == "KHI" ){
                 domX.first = -0.5;
@@ -296,10 +303,10 @@ public: // everything is public
 
                 t = time.first;
 
-                bc["N"] = "REF";
-                bc["S"] = "REF";
-                bc["E"] = "REF";
-                bc["W"] = "REF";
+                bc["N"] = "SOL";
+                bc["S"] = "SOL";
+                bc["E"] = "SOL";
+                bc["W"] = "SOL";
             }
             else if( problem == "KHI" ){
                 domX.first = -0.5;

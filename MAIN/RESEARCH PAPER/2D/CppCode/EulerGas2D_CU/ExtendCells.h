@@ -170,6 +170,18 @@ void ExtendCells::extend_matrix( vector< vector<double> >& matrix , unordered_ma
     else if( bc["N"] == "DIR" ){
         
     }
+    else if( bc["N"] == "SOL" ){
+        if( var=="MomentumY" ){
+            auto temp = matrix.back();
+            for(auto& k : temp){
+                k = -1*k;
+            }
+            matrix.push_back(temp);
+        }
+        else{
+            matrix.push_back( matrix.back() );
+        }
+    }
     else{
         cout << "---ERROR--- Please give correct B.C. for North boundary---" << endl;
     }
@@ -195,6 +207,18 @@ void ExtendCells::extend_matrix( vector< vector<double> >& matrix , unordered_ma
     }
     else if( bc["S"] == "DIR" ){
         
+    }
+    else if( bc["N"] == "SOL" ){
+        if( var=="MomentumY" ){
+            auto temp = matrix[0];
+            for(auto& k : temp){
+                k = -1*k;
+            }
+            matrix.insert(matrix.begin(), temp);
+        }
+        else{
+            matrix.insert(matrix.begin(), matrix[0]);
+        }
     }
     else{
         cout << "---ERROR--- Please give correct B.C. for North boundary---" << endl;
@@ -228,6 +252,18 @@ void ExtendCells::extend_matrix( vector< vector<double> >& matrix , unordered_ma
     else if( bc["E"] == "DIR" ){
         
     }
+    else if( bc["N"] == "SOL" ){
+        if( var=="MomentumX" ){
+            for(auto& i : matrix){
+                i.push_back( -1*i.back() );
+            }
+        }
+        else{
+            for(auto& i : matrix){
+                i.push_back( i.back() );
+            }
+        }
+    }
     else{
         cout << "---ERROR--- Please give correct B.C. for North boundary---" << endl;
     }
@@ -257,6 +293,18 @@ void ExtendCells::extend_matrix( vector< vector<double> >& matrix , unordered_ma
     }
     else if( bc["W"] == "DIR" ){
         
+    }
+    else if( bc["N"] == "SOL" ){
+        if( var=="MomentumX" ){
+            for(auto& i : matrix){
+                i.insert( i.begin() , -1*i[0] );
+            }
+        }
+        else{
+            for(auto& i : matrix){
+                i.insert( i.begin() , i[0] );
+            }
+        }
     }
     else{
         cout << "---ERROR--- Please give correct B.C. for North boundary---" << endl;

@@ -56,6 +56,21 @@ def read_matrix(file, n):
 
     return data
 
+def read_matrix_gen(file, n1, n2):
+    """
+        Function to read single matrix instance for a given text file
+        -> read lines between n1 and n2
+    """
+    data = []
+
+    with open(file, "r") as f:
+        lines = f.readlines()[n1:n2]
+
+    for line in lines:
+        data.append( list(map(float, line.split())) )
+
+    return data
+
 def plot(var, env_cu, env_ref):
     """
         Function to plot the heat maps for a variable for both CU and reference
@@ -136,6 +151,52 @@ def plot_cu(var, env_cu):
     plt.savefig(f"plots/{env_cu['PROBLEM']}_{var}(CU_only).png")
     plt.show()
 
+def plot_initial_final(var, env_cu):
+    """
+        Function to plot initial and final configurations for CU plot
+    """
+
+    fig, axd = plt.subplot_mosaic(
+        [
+            ['INI','CU'],
+            ['INI','CU']
+        ],
+        figsize=(10,10),
+        layout="constrained"
+    )
+    
+    file_cu = "result1/" + var + ".txt"
+
+    data_ini = read_matrix_gen(file_cu, 0, env_cu["Ny"])
+    data_cu = read_matrix(file_cu, env_cu["Ny"])
+    
+    # CU heat map
+    hm1 = axd["INI"].imshow(
+        data_ini,
+        # cmap="YlGnBu",
+        cmap="jet",
+        origin="lower",
+        extent=[ env_cu["domX"][0], env_cu["domX"][1], env_cu["domY"][0], env_cu["domY"][1] ],    
+    )
+    axd["INI"].set_title("Central Upwind Scheme")
+    fig.colorbar(hm1, ax=axd["INI"])
+
+    # CU heat map
+    hm2 = axd["CU"].imshow(
+        data_cu,
+        # cmap="YlGnBu",
+        cmap="jet",
+        origin="lower",
+        extent=[ env_cu["domX"][0], env_cu["domX"][1], env_cu["domY"][0], env_cu["domY"][1] ],    
+    )
+    axd["CU"].set_title("Central Upwind Scheme")
+    fig.colorbar(hm2, ax=axd["CU"])
+
+    fig.suptitle(f"{env_cu['PROBLEM']} {var}")
+
+    plt.savefig(f"plots/{env_cu['PROBLEM']}_{var}(CU_only).png")
+    plt.show()
+
 #! Main plotting starts
 if __name__ == "__main__":
 
@@ -156,4 +217,5 @@ if __name__ == "__main__":
 
 
     # for plotting only the CU plot (fast)
-    plot_cu("Density", env_cu)
+    # plot_cu("Density", env_cu)
+    plot_initial_final("Density", env_cu)
