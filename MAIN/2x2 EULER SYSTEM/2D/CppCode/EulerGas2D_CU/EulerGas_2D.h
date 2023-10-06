@@ -97,6 +97,7 @@ public:
         OPR::write_matrix(this->shock_type, "DENSITY", rho);
 
         while( t < time.second ){
+            cout << "------------------------------------------------------------------------------------" << endl;
             cout << "t = " << t << " | dt = " << dt << endl;
             
             // function to update the conservative variables internally
@@ -180,7 +181,6 @@ public:
                 cout << "---ERROR--- Please enter a valid initial state ---" << endl;
                 break;
         }
-
 
         ss << mode << endl;
         ss << domainX.first << " " << domainX.second << endl;
@@ -373,6 +373,9 @@ public:
 
         }
 
+        // extend the grid
+        ExtendVarMatrices();
+
     }
 
     /*
@@ -422,8 +425,8 @@ public:
 
         for(int i=1 ; i<row-1 ; i++){
             for(int j=1; j<col-1 ; j++){
-                u2[i-1][j-1] = ( 3*u[i][j] + u1[i][j] - ( LAMBDA*( F1[0][i][j] - F1[0][i][j-1] ) + MU*( G1[0][i][j] - G1[0][i-1][j] ) ) ) / 4;
-                rho2[i-1][j-1] = ( 3*rho[i][j] + rho1[i][j] - ( LAMBDA*( F1[1][i][j] - F1[1][i][j-1] ) + MU*( G1[1][i][j] - G1[1][i-1][j] ) ) ) / 4;
+                u2[i-1][j-1] = ( ( 3*u[i][j] + u1[i][j] ) - ( LAMBDA*( F1[0][i][j] - F1[0][i][j-1] ) + MU*( G1[0][i][j] - G1[0][i-1][j] ) ) ) / 4.0;
+                rho2[i-1][j-1] = ( ( 3*rho[i][j] + rho1[i][j] ) - ( LAMBDA*( F1[1][i][j] - F1[1][i][j-1] ) + MU*( G1[1][i][j] - G1[1][i-1][j] ) ) ) / 4.0;
             }
         }
 
@@ -443,8 +446,8 @@ public:
 
         for(int i=1 ; i<row-1 ; i++){
             for(int j=1; j<col-1 ; j++){
-                un[i-1][j-1] = ( u[i][j] + 2*u2[i][j] - 2*( LAMBDA*( FN[0][i][j] - FN[0][i][j-1] ) + MU*( GN[0][i][j] - GN[0][i-1][j] ) ) ) / 3;
-                rhon[i-1][j-1] = ( rho[i][j] + 2*rho2[i][j] - 2*( LAMBDA*( FN[1][i][j] - FN[1][i][j-1] ) + MU*( GN[1][i][j] - GN[1][i-1][j] ) ) ) / 3;
+                un[i-1][j-1] = ( ( u[i][j] + 2*u2[i][j] ) - 2*( LAMBDA*( FN[0][i][j] - FN[0][i][j-1] ) + MU*( GN[0][i][j] - GN[0][i-1][j] ) ) ) / 3.0;
+                rhon[i-1][j-1] = ( ( rho[i][j] + 2*rho2[i][j] ) - 2*( LAMBDA*( FN[1][i][j] - FN[1][i][j-1] ) + MU*( GN[1][i][j] - GN[1][i-1][j] ) ) ) / 3.0;
             }
         }
 
@@ -458,9 +461,6 @@ public:
 
     //! MAIN function to run the CU scheme given a matrix for the variables
     vvvvd get_cu_flux(vvd& u, vvd& rho){
-        // extending the given variable matrices for 
-        // ExtendVarMatrices();
-
         // get the piecewise linear reconstruction
         vvvd u_plr = get_plr(u, "VELOCITY");
         vvvd rho_plr = get_plr(rho, "DENSITY");
@@ -475,8 +475,8 @@ public:
         // we need Flux vectors from the Euler equations later
         vvvd flux_E = FLX::fflux(u_plr[2],rho_plr[2]);
         vvvd flux_W = FLX::fflux(u_plr[3], rho_plr[3]);
-        vvvd flux_N = FLX::fflux(u_plr[0],rho_plr[0]);
-        vvvd flux_S = FLX::fflux(u_plr[1], rho_plr[1]);
+        vvvd flux_N = FLX::gflux(u_plr[0],rho_plr[0]);
+        vvvd flux_S = FLX::gflux(u_plr[1], rho_plr[1]);
 
         // now we need to calculate the anti diffusion terms
         vvvd adt_x = get_adt_x(u_plr, rho_plr, lsp_x, flux_E, flux_W);
@@ -508,27 +508,34 @@ public:
         int row = lsp_x[0].size();
         int col = lsp_x[0][0].size();
 
-        for(int i=0 ; i<row ; i++){
+        for(int i=1 ; i<row-1 ; i++){
             for(int j=0 ; j<col-1 ; j++){
                 amax = max(
                     amax,
                     max(
                         lsp_x[0][i][j], -1*lsp_x[1][j][j]
+                        // lsp_x[0][i][j], lsp_x[1][j][j]
                     )
                 );
             }
         }
 
+
         for(int i=0 ; i<row-1 ; i++){
-            for(int j=0 ; j<col ; j++){
+            for(int j=1 ; j<col-1 ; j++){
                 bmax = max(
                     bmax,
                     max(
                         lsp_y[0][i][j] , -1*lsp_y[1][i][j]
+                        // lsp_y[0][i][j] , lsp_y[1][i][j]
                     )
                 );
             }
         }
+
+        // log
+        cout << "amax (t=" << t << ") = " << amax << endl;
+        cout << "bmax (t=" << t << ") = " << bmax << endl;
 
         double dt = CTS::CFL*min( dx/amax , dy/bmax );
 
@@ -602,7 +609,7 @@ public:
         int row = var.size();
         int col = var[0].size();
 
-        vvd slx(row, vd(col));
+        vvd slx(row-2, vd(col-2));
 
         for(int i=1 ; i<row-1 ; i++){
             for(int j=1 ; j<col-1 ; j++){
@@ -610,9 +617,11 @@ public:
                 double v2 = 0.5*(var[i][j+1] - var[i][j-1]);
                 double v3 = CTS::THETA * (var[i][j+1] - var[i][j]);
 
-                slx[i][j] = UTL::minmod( v1 , v2 , v3 );
+                slx[i-1][j-1] = UTL::minmod( v1 , v2 , v3 );
             }
         }
+
+        EXC::extend_matrix(slx, bc, "SLOPES");
 
         return slx;
     }
@@ -621,7 +630,7 @@ public:
         int row = var.size();
         int col = var[0].size();
 
-        vvd sly(row, vd(col));
+        vvd sly(row-2, vd(col-2));
 
         for(int i=1 ; i<row-1 ; i++){
             for(int j=1 ; j<col-1 ; j++){
@@ -629,9 +638,11 @@ public:
                 double v2 = 0.5*(var[i+1][j] - var[i-1][j]);
                 double v3 = CTS::THETA * (var[i+1][j] - var[i][j]);
 
-                sly[i][j] = UTL::minmod( v1 , v2 , v3 );
+                sly[i-1][j-1] = UTL::minmod( v1 , v2 , v3 );
             }
         }
+
+        EXC::extend_matrix(sly, bc, "SLOPES");
 
         return sly;
     }
@@ -649,9 +660,12 @@ public:
 
         for(int i=0 ; i<row ; i++){
             for(int j=0 ; j<col-1 ; j++){
+
                 ap[i][j] = max(
                     0.0 ,
                     max(
+                        // abs( 2*u_plr[3][i][j+1] ),
+                        // abs( 2*u_plr[2][i][j] )
                         2*u_plr[3][i][j+1],
                         2*u_plr[2][i][j]
                     )
@@ -660,15 +674,35 @@ public:
                 am[i][j] = min(
                     0.0,
                     min(
+                        // abs( u_plr[3][i][j+1] ),
+                        // abs( u_plr[2][i][j] )
                         u_plr[3][i][j+1],
                         u_plr[2][i][j]
                     )
                 );
+
             }
         }
 
         lsp.push_back(ap);
         lsp.push_back(am);
+
+        // log
+        // cout << "a+ (t=" << t << ")" << endl;
+        // for(auto i : ap){
+        //     for(auto j : i){
+        //         cout << j << " ";
+        //     }
+        //     cout << endl;
+        // }
+
+        // cout << "a- (t=" << t << ")" << endl;
+        // for(auto i : am){
+        //     for(auto j : i){
+        //         cout << j << " ";
+        //     }
+        //     cout << endl;
+        // }
 
         return lsp;
     }   
@@ -686,9 +720,12 @@ public:
 
         for(int i=0 ; i<row-1 ; i++){
             for(int j=0 ; j<col ; j++){
+
                 bp[i][j] = max(
                     0.0 ,
                     max(
+                        // abs( 2*u_plr[1][i+1][j] ),
+                        // abs( 2*u_plr[0][i][j] )
                         2*u_plr[1][i+1][j],
                         2*u_plr[0][i][j]
                     )
@@ -697,10 +734,13 @@ public:
                 bm[i][j] = min(
                     0.0,
                     min(
+                        // abs( u_plr[1][i+1][j] ),
+                        // abs( u_plr[0][i][j] )
                         u_plr[1][i+1][j],
                         u_plr[0][i][j]
                     )
                 );
+
             }
         }
 
@@ -752,8 +792,8 @@ public:
 
     vvvd get_adt_y(vvvd& u_plr, vvvd& rho_plr, vvvd& lsp, vvvd& flux_N, vvvd& flux_S){
 
-        vvd u_star = get_star_y(u_plr, lsp, flux_N[1], flux_S[1]);
-        vvd rho_star = get_star_y(rho_plr, lsp, flux_N[0], flux_S[0]);
+        vvd u_star = get_star_y(u_plr, lsp, flux_N[0], flux_S[0]);
+        vvd rho_star = get_star_y(rho_plr, lsp, flux_N[1], flux_S[1]);
 
         // calculating anti diffusion terms
         int row = rho_plr[0].size();

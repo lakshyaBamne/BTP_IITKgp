@@ -22,6 +22,8 @@ void RunCentralUpwindScheme(int shock_type, string mode){
     // initialize Riemann problem using the class constructor
     ModifiedEulerSystem_CU rp(shock_type);
 
+    // rp.show_cons_vars_new();
+
     if( mode == "COMPLETE" ){
         rp.RunCU_complete();
     }
@@ -37,11 +39,11 @@ void RunCentralUpwindScheme(int shock_type, string mode){
 int main(){
     
     // repeatedly run the Central Upwind Scheme for all initial conditions and store the results
-    for(int i=1 ; i<=12 ; i++){
-        RunCentralUpwindScheme(i, "PARTIAL");
-    }
+    // for(int i=1 ; i<=12 ; i++){
+    //     RunCentralUpwindScheme(i, "PARTIAL");
+    // }
 
-    // RunCentralUpwindScheme(1, "PARTIAL");
+    RunCentralUpwindScheme(1, "PARTIAL");
 
     return  0;
 }

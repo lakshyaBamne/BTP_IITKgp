@@ -6,8 +6,17 @@
     ! Python file to plot the results
 """
 
+# setting up agg to store figures as beautiful png's
+import matplotlib
+
+# pyplot provides a simple interface for the most common functionality
 import matplotlib.pyplot as plt
+
+# numpy is a numerical processing engine usefull with all kinds of data
 import numpy as np
+from matplotlib.ticker import (
+    AutoMinorLocator
+)
 
 def read_matrix(file, n):
     """
@@ -17,10 +26,10 @@ def read_matrix(file, n):
     data = []
     
     with open(file, "r") as f:
-        lines = f.readlines()[-n:]
+        lines = f.readlines()[-(n+1):-1]
 
     for line in lines:
-        data.append( list(map(float, line.split())) )
+        data.append( list(map(float, line.split()))[1:-1] )
 
     return data
 
@@ -34,14 +43,55 @@ def contour(shock_type):
     x = list(map(float, lines[0].split()))
     y = list(map(float, lines[1].split()))
 
+    # initialize the figure object and get the default axes object
+    fig = plt.figure()
+    ax = fig.gca()
+
+    # getting the data to be plotted 
     X, Y = np.meshgrid(x,y)
     Z = read_matrix(f"result/{shock_type}_DENSITY.txt", 600)
+    # Z = read_matrix(f"result/{shock_type}_DENSITY.txt", 10)
 
-    fig, ax = plt.subplots()
-    CS = ax.contour(X, Y, Z , colors="black")
+    # make the contour plot
+    ax.contour(
+        X, Y, Z, 
+        colors="red", 
+    )
+
+    # title for the axes object
     ax.set_title(f"DENSITY - {shock_type}")
 
+    # to forcefully make the axes object a square 
+    ax.set_aspect('equal', adjustable='box')
+
+    # initialize a very light background grid for easier visualization in contour plots
+    ax.grid(color='green', linestyle='-', linewidth=0.1)
+
+    # axes ticks and tick labels for good looking graphs
+
+    # add ticks to all 4 sides of the plot
+    ax.tick_params(
+        top=True,
+        bottom=True,
+        left=True,
+        right=True,
+        labeltop=True,
+        labelbottom=True,
+        labelleft=True,
+        labelright=True
+    )
+
+    ax.set_xticks(np.arange(-1,1,0.2,dtype=float))
+    ax.set_yticks(np.arange(-1,1,0.2,dtype=float))
+
+    # adding minor ticks for better visualization
+    ax.xaxis.set_minor_locator(AutoMinorLocator())
+    ax.yaxis.set_minor_locator(AutoMinorLocator())
+
+    # save the figure so it can be visualised later
     plt.savefig(f"plots/{shock_type}_DENSITY(Contour).png")
+
+    # command to show the figure on the screen of the user
     plt.show()
 
 def cu(shock_type):
@@ -61,11 +111,11 @@ def cu(shock_type):
     file_cu = f"result/{shock_type}_DENSITY.txt"
 
     data_cu = read_matrix(file_cu, 600)
+    # data_cu = read_matrix(file_cu, 10)
     
     # CU heat map
     hm1 = axd["CU"].imshow(
         data_cu,
-        # cmap="YlGnBu",
         cmap="jet",
         origin="lower",
         extent=[ -1,1,-1,1 ],    
@@ -85,7 +135,6 @@ def plot(shock_type):
     fig, axd = plt.subplot_mosaic(
         [
             ['CU', 'CONTOUR'],
-            ['CU', 'CONTOUR']
         ],
         figsize=(10,10),
         layout="constrained"
@@ -98,14 +147,17 @@ def plot(shock_type):
     # CU heat map
     hm1 = axd["CU"].imshow(
         data_cu,
-        # cmap="YlGnBu",
         cmap="jet",
         origin="lower",
         extent=[ -1,1,-1,1 ],    
     )
     axd["CU"].set_title(f"DENSITY PLOT - {shock_type}")
-    fig.colorbar(hm1, ax=axd["CU"])
 
+    axd["CU"].set_aspect('equal', adjustable='box')
+
+    fig.colorbar(hm1, ax=axd["CU"], shrink=0.5)
+
+    # Contour plot for final density
     with open(f"result/{shock_type}_ComputationalGrid.txt") as f:
         lines = f.readlines()
 
@@ -120,11 +172,15 @@ def plot(shock_type):
     )
     axd["CONTOUR"].set_title(f"CONTOUR PLOT - {shock_type}")
 
+    axd["CONTOUR"].grid(color='green', linestyle='-', linewidth=0.1)
+    axd["CONTOUR"].set_aspect('equal', adjustable='box')
 
     plt.suptitle(f"{shock_type} - Final Density plot")
 
     # save the plot and show on screen
     plt.savefig(f"plots/{shock_type}_DENSITY.png")
+    
+    # show the plots to the screen of the user
     plt.show()
 
 """
@@ -132,5 +188,14 @@ def plot(shock_type):
 """
 if __name__ == "__main__":
     
-    for i in  range(1, 13):
-        plot(i)
+    # density plot and contour plot
+    # for i in  range(1, 13):
+    #     plot(i)
+
+    plot(1)
+
+    # contour plot only
+    # for i in range(1,13):
+    #     contour(i)
+
+    contour(1)

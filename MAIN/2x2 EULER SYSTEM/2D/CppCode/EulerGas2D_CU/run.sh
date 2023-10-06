@@ -8,6 +8,7 @@
 # create the required directories
 mkdir -p result
 mkdir -p plots
+mkdir -p env
 
 # remove all the existing data files to create new ones
 find . -name "*.txt" -type f -delete
@@ -21,5 +22,4 @@ g++ main.cpp -o prg.x
 ./prg.x
 
 # plot the results according to the mode user used
-# python plot.py
 python plot.py
