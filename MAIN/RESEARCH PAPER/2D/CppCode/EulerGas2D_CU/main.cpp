@@ -8,14 +8,19 @@
 #include<vector>
 #include<string>
 
+#include "Constants.h"
+#include "Utility.h"
 #include "2D_CUScheme.h"
 
 using namespace std;
 
-int main(){
+namespace CTS = Constants;
+namespace CTR = ConstantsRT;
+namespace UTL = Utility;
 
+int main(){
     string to_solve;
-    string only_cu;
+    string plot_ref;
 
     cout << "----------------------------------------------------------------------------------------------------" << endl;
     cout << "--------------------------------------------2D Central Upwind---------------------------------------" << endl;
@@ -33,22 +38,19 @@ int main(){
     cout << "SELECT PROBLEM -> ";
     cin >> to_solve;
     cout << "PLOT REFERENCE? (Y/N) -> ";
-    cin >> only_cu;
+    cin >> plot_ref;
 
-    // class RP (RiemannProblem) is responsible for initializing variables and running Numerical Schemes
-    if( only_cu == "Y" ){
-        // plot both the CU and Reference plot
-        RP rp1("CU", to_solve);
-        RP rp2("REF", to_solve);
+    if( plot_ref == "Y" ){ // Plot CU and REF both
+        EulerSystem_2D P1("CU", to_solve);
+        EulerSystem_2D P2("REF", to_solve);
 
-        rp1.RunCU_partial();
-        rp2.RunCU_partial();
+        P1.RunCU_partial();
+        P2.RunCU_partial();
     }
-    else{
-        // plot only the CU plot
-        RP rp1("CU", to_solve);
+    else{ // Plot only CU
+        EulerSystem_2D P1("CU", to_solve);
 
-        rp1.RunCU_partial();
+        P1.RunCU_partial();
     }
 
     return 0;

@@ -63,9 +63,9 @@ void OutputResult::write_grids(string mode, const vector<double>& gridX, const v
     fout << strx << endl;
     fout << stry << endl;
 
-    fout.close();
-
     cout << "---LOG--- write successfull in [" << file_name << "] ---" << endl; 
+
+    fout.close();
 }
 
 void OutputResult::write_matrix(string mode, string var, const vector< vector<double> >& matrix){
@@ -90,8 +90,8 @@ void OutputResult::write_matrix(string mode, string var, const vector< vector<do
         fout << str << endl;
     }
 
-    fout.close();
-
     cout << "---LOG--- write successfull in [" << file_name << "]" << endl;
+
+    fout.close();
 
 }

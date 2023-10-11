@@ -20,7 +20,6 @@
 using namespace std;
 
 namespace CTS = Constants;
-namespace CTR = ConstantsRT;
 
 namespace PrimitiveVariables{
     // Function to find the Primitive variables from Conserved variables
@@ -71,7 +70,7 @@ vvd PrimitiveVariables::get_p(string problem, vvd& rho, vvd& u, vvd& v, vvd& E){
     for(int i=0 ; i<row ; i++){
         for(int j=0 ; j<col ; j++){
             if( problem == "RTI" ){
-                p[i][j] = ( CTR::GAMMA-1 )*( E[i][j] - 0.5*rho[i][j]*( pow(u[i][j],2) + pow(v[i][j],2) ) );
+                p[i][j] = ( CTS::GAMMA_RT-1 )*( E[i][j] - 0.5*rho[i][j]*( pow(u[i][j],2) + pow(v[i][j],2) ) );
             }
             else{
                 p[i][j] = ( CTS::GAMMA-1 )*( E[i][j] - 0.5*rho[i][j]*( pow(u[i][j],2) + pow(v[i][j],2) ) ) ;

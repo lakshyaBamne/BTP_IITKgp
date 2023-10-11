@@ -144,8 +144,6 @@ void ExtendCells::extend_matrix( vector< vector<double> >& matrix , unordered_ma
 
 void ExtendCells::extend_matrix( vector< vector<double> >& matrix , unordered_map<string,string>& bc , string var ){
 
-    cout << "---LOG--- Extending matrix ---" << endl;
-
     // 1) Extending the North(top) and South(bottom) boundaries
 
     //! North boundary

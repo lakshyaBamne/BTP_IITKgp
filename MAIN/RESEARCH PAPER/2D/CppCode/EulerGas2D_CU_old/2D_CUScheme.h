@@ -724,40 +724,34 @@ public: // everything is public
     // and store data for every iteration
     void RunCU_complete(){
 
-        int count = 0;
-
         vector< vector<double> > u;
         vector< vector<double> > v;
         vector< vector<double> > p;
 
         while( t < time.second ){
             cout << "t = " << t << " | dt = " << dt << endl;
-
-            if( count % 5 == 0 ){
-                //! write variable values at each step for making animations
-                OPR::write_matrix(mode, "Density", rho);
-                OPR::write_matrix(mode, "MomentumX", mx);
-                OPR::write_matrix(mode, "MomentumY", my);
-                OPR::write_matrix(mode, "Energy", E);
-
-                // get the primitive variables
-                u = PRV::get_u(problem, rho, mx);
-                v = PRV::get_v(problem, rho, my);
-                p = PRV::get_p(problem, rho, u, v, E);
-
-                OPR::write_matrix(mode, "VelocityX", u);
-                OPR::write_matrix(mode, "VelocityY", v);
-                OPR::write_matrix(mode, "Pressure", p);
-            }
             
+            //! write variable values at each step for making animations
+            OPR::write_matrix(mode, "Density", rho);
+            OPR::write_matrix(mode, "MomentumX", mx);
+            OPR::write_matrix(mode, "MomentumY", my);
+            OPR::write_matrix(mode, "Energy", E);
+
+            // get the primitive variables
+            u = PRV::get_u(problem, rho, mx);
+            v = PRV::get_v(problem, rho, my);
+            p = PRV::get_p(problem, rho, u, v, E);
+
+            OPR::write_matrix(mode, "VelocityX", u);
+            OPR::write_matrix(mode, "VelocityY", v);
+            OPR::write_matrix(mode, "Pressure", p);
+
             // function to update the conservative variables internally
             // also update dt for next iteration
             get_next_vars();
 
             // update new time step calculated using CFL conditions
             t += dt;
-
-            count++;
 
         }
     }
@@ -783,23 +777,6 @@ public: // everything is public
 
         while( t < time.second ){
             cout << "t = " << t << " | dt = " << dt << endl;
-
-            if( t==0.5 || t==1.0 || t==1.5 || t==2.0 ){
-                //! write final values for plotting
-                OPR::write_matrix(mode, "Density", rho);
-                OPR::write_matrix(mode, "MomentumX", mx);
-                OPR::write_matrix(mode, "MomentumY", my);
-                OPR::write_matrix(mode, "Energy", E);
-
-                // get the primitive variables
-                u = PRV::get_u(problem, rho, mx);
-                v = PRV::get_v(problem, rho, my);
-                p = PRV::get_p(problem, rho, u, v, E);
-
-                OPR::write_matrix(mode, "VelocityX", u);
-                OPR::write_matrix(mode, "VelocityY", v);
-                OPR::write_matrix(mode, "Pressure", p);       
-            }
             
             // function to update the conservative variables internally
             // also update dt for next iteration
@@ -1119,7 +1096,6 @@ public: // everything is public
 
     // function to obtain the PLR of a given conserved variable
     // used as a subroutine in CU flux calculation
-    //! checked manually
     vvvd get_plr(vvd& var, string var_name){
         vvd slx = get_slx(var);        
         vvd sly = get_sly(var);        
@@ -1247,16 +1223,16 @@ public: // everything is public
                 ap[i][j] = max(
                     0.0 ,
                     max(
-                        uW[i][j+1] + sqrtf( (GAMMA*pW[i][j+1])/rho_plr[3][i][j+1] ),
-                        uE[i][j] + sqrtf( (GAMMA*pE[i][j]) / rho_plr[2][i][j] )
+                        uW[i][j+1] + sqrtf( abs((GAMMA*pW[i][j+1])/rho_plr[3][i][j+1]) ),
+                        uE[i][j] + sqrtf( abs((GAMMA*pE[i][j]) / rho_plr[2][i][j]) )
                     )
                 );
 
                 am[i][j] = min(
                     0.0,
                     min(
-                        uW[i][j+1] - sqrtf( (GAMMA*pW[i][j+1])/rho_plr[3][i][j+1] ),
-                        uE[i][j] - sqrtf( (GAMMA*pE[i][j])/rho_plr[2][i][j] )
+                        uW[i][j+1] - sqrtf( abs((GAMMA*pW[i][j+1])/rho_plr[3][i][j+1]) ),
+                        uE[i][j] - sqrtf( abs((GAMMA*pE[i][j])/rho_plr[2][i][j]) )
                     )
                 );
             }
@@ -1300,16 +1276,16 @@ public: // everything is public
                 bp[i][j] = max(
                     0.0 ,
                     max(
-                        vS[i+1][j] + sqrtf( (GAMMA*pS[i+1][j])/rho_plr[1][i+1][j] ),
-                        vN[i][j] + sqrtf( (GAMMA*pN[i][j]) / rho_plr[0][i][j] )
+                        vS[i+1][j] + sqrtf( abs((GAMMA*pS[i+1][j])/rho_plr[1][i+1][j]) ),
+                        vN[i][j] + sqrtf( abs((GAMMA*pN[i][j]) / rho_plr[0][i][j]) )
                     )
                 );
 
                 bm[i][j] = min(
                     0.0,
                     min(
-                        vS[i+1][j] - sqrtf( (GAMMA*pS[i+1][j])/rho_plr[1][i+1][j] ),
-                        vN[i][j] - sqrtf( (GAMMA*pN[i][j])/rho_plr[0][i][j] )
+                        vS[i+1][j] - sqrtf( abs((GAMMA*pS[i+1][j])/rho_plr[1][i+1][j]) ),
+                        vN[i][j] - sqrtf( abs((GAMMA*pN[i][j])/rho_plr[0][i][j]) )
                     )
                 );
             }
