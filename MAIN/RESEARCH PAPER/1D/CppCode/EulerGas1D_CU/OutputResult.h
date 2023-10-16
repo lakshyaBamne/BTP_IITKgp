@@ -1,4 +1,10 @@
 /*
+    * @author Lakshya Bamne(20MA20029) student @IIT Kharagpur, semester-7 (Mathematics and Computing)
+    * 1-Dimensional Central Upwind Scheme
+    * Supervisor - Prof. Naveen Kumar Garg (IIT Kharagpur, Dept. of Mathematics)
+*/
+
+/*
     Namespace to output the values of the conserved variables in a text file
     to be printed later
 */
@@ -15,9 +21,8 @@ using namespace std;
 namespace OutputResult{
     // Function which takes a vector, a file name and appends the contents
     // of the vector at the end of the file
-    void write_vector(vector<double>& nums, string file_name);
-
     string vector_to_string(vector<double>& nums);
+    void write_vector(vector<double>& nums, string file_name);
 }
 
 void OutputResult::write_vector(vector<double>& nums, string file_name){
@@ -47,4 +52,3 @@ string OutputResult::vector_to_string(vector<double>& nums){
 
     return ss.str();
 }
-

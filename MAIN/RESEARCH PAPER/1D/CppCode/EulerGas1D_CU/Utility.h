@@ -1,4 +1,10 @@
 /*
+    * @author Lakshya Bamne(20MA20029) student @IIT Kharagpur, semester-7 (Mathematics and Computing)
+    * 1-Dimensional Central Upwind Scheme
+    * Supervisor - Prof. Naveen Kumar Garg (IIT Kharagpur, Dept. of Mathematics)
+*/
+
+/*
     Namespace to encapsulate all the Utility functions
 */
 #pragma once
@@ -13,6 +19,8 @@ namespace Utility{
     // minmod functions with different numbers of arguments
     double minmod(double x, double y);
     double minmod(double x, double y, double z);
+
+    void export_string(string to_write);
 }
 
 /*
@@ -40,5 +48,19 @@ double Utility::minmod(double x, double y, double z){
     else{
         return 0;
     }
+}
+
+void Utility::export_string(string to_write){
+    ofstream fout;
+    fout.open("env/env.txt", ios::app);
+
+    if( fout ){
+        fout << to_write << endl;
+    }
+    else{
+        cout << "---ERROR--- Could not write to file ---" << endl;
+    }
+
+    fout.close();
 }
 

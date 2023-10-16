@@ -340,4 +340,4 @@ if __name__ == "__main__":
     # for plotting only the CU plot (fast)
     # plot_cu("Density", env_cu)
     plot_initial_final("Density", env_cu)
-    plot_new("Density", env_cu)
+    # plot_new("Density", env_cu)

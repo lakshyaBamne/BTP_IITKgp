@@ -13,6 +13,11 @@ def minmod(*nums: float) -> float:
     else:
         return 0;
 
+def merge_dicts(dict1: dict, dict2: dict) -> dict:
+    """
+        Function to merge two dictionaries into one
+    """
 
+    return {**dict1, **dict2}
 
 

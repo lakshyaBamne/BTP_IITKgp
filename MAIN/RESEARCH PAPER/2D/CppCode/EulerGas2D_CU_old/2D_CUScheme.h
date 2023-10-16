@@ -123,8 +123,8 @@ public: // everything is public
                 domY.first = 0;
                 domY.second = 1.2;
 
-                dx = (double)3/2500;
-                dy = (double)3/2500;
+                dx = (double)3/1000;
+                dy = (double)3/1000;
 
                 time.first = 0;
                 time.second = 1;
