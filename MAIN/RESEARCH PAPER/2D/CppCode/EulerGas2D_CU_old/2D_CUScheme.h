@@ -166,7 +166,7 @@ public: // everything is public
                 domY.second = 0.3;
 
                 dx = (double)3/6000;
-                dy = (double)3/8000;
+                dy = (double)3/6000;
 
                 // dx = (double)3/600;
                 // dy = (double)3/800;
